@@ -3,7 +3,7 @@ import { Context, Effect, Layer, Option } from 'effect';
 
 import { TodoRepository } from './TodoRepository';
 
-export class TodoService extends Context.Service<TodoService>()('@workspace/api/TodoService', {
+export class TodoService extends Context.Service<TodoService>()('@workspace/server/TodoService', {
   make: Effect.gen(function* () {
     const todoRepository = yield* TodoRepository;
 

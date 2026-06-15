@@ -12,7 +12,7 @@ const PgClientLive = pgClientLayerConfig({
   url: Config.redacted('DATABASE_URL'),
 });
 
-export class DbService extends Context.Service<DbService>()('@workspace/api/DbService', {
+export class DbService extends Context.Service<DbService>()('@workspace/server/DbService', {
   make: PgDrizzle.make({ relations }).pipe(Effect.provide(PgDrizzle.DefaultServices)),
 }) {
   static readonly layer = Layer.effect(this, this.make).pipe(Layer.provide(PgClientLive));

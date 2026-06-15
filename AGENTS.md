@@ -17,21 +17,19 @@ This project vendors external repositories under @repos/
 
 ## File Naming
 
-- Frontend app (`apps/app`): kebab-case (e.g. `app-client.ts`, `todo-list.tsx`).
-- Backend (`apps/backend`) and shared packages: PascalCase (e.g. `TodoService.ts`, `Schemas.ts`).
+- Web app (`apps/web`): kebab-case (e.g. `app-client.ts`, `todo-list.tsx`).
+- Server (`apps/server`) and shared packages: PascalCase (e.g. `TodoService.ts`, `Schemas.ts`).
 - Framework- or tool-generated files keep their mandated names (e.g. TanStack Router's `routes/index.tsx`, `__root.tsx`, `routeTree.gen.ts`, and entry files like `index.ts` / `main.tsx`).
 
 ## Frontend Modules
 
-Each feature lives under `apps/app/src/modules/<feature>/`:
+Each feature lives under `apps/web/src/modules/<feature>/`:
 
 - `atoms.ts` — the data layer (RPC-backed query/mutation atoms).
 - `components/` — small, single-purpose components.
 
-The route component (under `apps/app/src/routes/`) is the composition of a module's components: it owns layout and wiring, while the components in `components/` stay small and contained.
+The route component (under `apps/web/src/routes/`) is the composition of a module's components: it owns layout and wiring, while the components in `components/` stay small and contained.
 
 ## Effect
 
 Always read @repos/effect/LLMS.md before writing any Effect code. Inspect @repos/effect/ for examples of idiomatic usage, tests, module structure, and API design. Treat it as the source of truth for Effect patterns.
-
-
