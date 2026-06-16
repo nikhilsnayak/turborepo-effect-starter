@@ -1,4 +1,4 @@
-import { TodoRpcs } from '@workspace/contracts/modules/todo';
+import { TodoRpcs } from '@turborepo-effect-starter/contracts/modules/todo';
 import { Effect, Layer } from 'effect';
 
 import { TodoService } from './TodoService';

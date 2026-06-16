@@ -1,10 +1,10 @@
 import { useAtomSet } from '@effect/atom-react';
-import { messageForCause } from '@workspace/client-runtime';
-import { createTodoAtom } from '@workspace/client-runtime/modules/todo';
-import { Button } from '@workspace/ui/components/button';
-import { Field, FieldDescription, FieldLabel } from '@workspace/ui/components/field';
-import { Input } from '@workspace/ui/components/input';
-import { toast } from '@workspace/ui/components/toast';
+import { messageForCause } from '@turborepo-effect-starter/client-runtime';
+import { createTodoAtom } from '@turborepo-effect-starter/client-runtime/modules/todo';
+import { Button } from '@turborepo-effect-starter/ui/components/button';
+import { Field, FieldDescription, FieldLabel } from '@turborepo-effect-starter/ui/components/field';
+import { Input } from '@turborepo-effect-starter/ui/components/input';
+import { toast } from '@turborepo-effect-starter/ui/components/toast';
 import { Exit } from 'effect';
 import { startTransition, useState } from 'react';
 

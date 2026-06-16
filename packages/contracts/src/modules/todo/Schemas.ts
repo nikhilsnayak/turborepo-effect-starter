@@ -35,7 +35,7 @@ export const ToggleTodoSuccess = Schema.Struct({
 });
 
 export class TodoNotFound extends Schema.TaggedErrorClass<TodoNotFound>()(
-  '@workspace/contracts/TodoNotFound',
+  '@turborepo-effect-starter/contracts/TodoNotFound',
   {
     todoId: Schema.String,
   },

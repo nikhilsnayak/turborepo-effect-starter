@@ -14,7 +14,7 @@
     "@effect/sql-pg": "catalog:",
     "@types/bun": "catalog:",
     "@types/pg": "^8.20.0",
-    "@workspace/contracts": "workspace:*",
+    "@turborepo-effect-starter/contracts": "workspace:*",
     "drizzle-kit": "^1.0.0-rc.4",
     "drizzle-orm": "^1.0.0-rc.4",
     "effect": "catalog:",

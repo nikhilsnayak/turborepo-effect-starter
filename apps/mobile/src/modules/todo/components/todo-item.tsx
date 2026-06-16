@@ -1,7 +1,7 @@
 import { useAtomSet } from '@effect/atom-react';
-import { isOptimisticId, messageForCause } from '@workspace/client-runtime';
-import { deleteTodoAtom, toggleTodoAtom } from '@workspace/client-runtime/modules/todo';
-import type { Todo } from '@workspace/contracts/modules/todo';
+import { isOptimisticId, messageForCause } from '@turborepo-effect-starter/client-runtime';
+import { deleteTodoAtom, toggleTodoAtom } from '@turborepo-effect-starter/client-runtime/modules/todo';
+import type { Todo } from '@turborepo-effect-starter/contracts/modules/todo';
 import { Exit } from 'effect';
 import { startTransition } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';

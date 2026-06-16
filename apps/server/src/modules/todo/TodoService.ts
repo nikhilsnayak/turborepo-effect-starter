@@ -1,10 +1,10 @@
-import { InternalServerError } from '@workspace/contracts';
-import { TodoNotFound } from '@workspace/contracts/modules/todo';
+import { InternalServerError } from '@turborepo-effect-starter/contracts';
+import { TodoNotFound } from '@turborepo-effect-starter/contracts/modules/todo';
 import { Context, Effect, Layer, Option } from 'effect';
 
 import { TodoRepository } from './TodoRepository';
 
-export class TodoService extends Context.Service<TodoService>()('@workspace/server/TodoService', {
+export class TodoService extends Context.Service<TodoService>()('@turborepo-effect-starter/server/TodoService', {
   make: Effect.gen(function* () {
     const todoRepository = yield* TodoRepository;
 

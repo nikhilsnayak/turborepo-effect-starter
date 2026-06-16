@@ -1,4 +1,4 @@
-import { cn } from '@workspace/ui/lib/utils';
+import { cn } from '@turborepo-effect-starter/ui/lib/utils';
 import * as React from 'react';
 
 function Label({ className, ...props }: React.ComponentProps<'label'>) {

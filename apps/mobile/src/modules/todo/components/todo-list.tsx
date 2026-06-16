@@ -1,6 +1,6 @@
 import { useAtomValue } from '@effect/atom-react';
-import { messageForCause } from '@workspace/client-runtime';
-import { todosAtom } from '@workspace/client-runtime/modules/todo';
+import { messageForCause } from '@turborepo-effect-starter/client-runtime';
+import { todosAtom } from '@turborepo-effect-starter/client-runtime/modules/todo';
 import { AsyncResult } from 'effect/unstable/reactivity';
 import { FlatList, StyleSheet, Text } from 'react-native';
 

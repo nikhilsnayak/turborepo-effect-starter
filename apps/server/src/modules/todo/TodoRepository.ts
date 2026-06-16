@@ -4,7 +4,7 @@ import { Context, Effect, Layer, Option } from 'effect';
 import { Todos, DbService } from '@/lib/db';
 
 export class TodoRepository extends Context.Service<TodoRepository>()(
-  '@workspace/server/TodoRepository',
+  '@turborepo-effect-starter/server/TodoRepository',
   {
     make: Effect.gen(function* () {
       const db = yield* DbService;

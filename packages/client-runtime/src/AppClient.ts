@@ -1,4 +1,4 @@
-import { AppRpcs } from '@workspace/contracts';
+import { AppRpcs } from '@turborepo-effect-starter/contracts';
 import { Layer } from 'effect';
 import { FetchHttpClient } from 'effect/unstable/http';
 import { AtomRpc } from 'effect/unstable/reactivity';
