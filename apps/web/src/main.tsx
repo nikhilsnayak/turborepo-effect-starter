@@ -1,11 +1,14 @@
 import '@workspace/ui/globals.css';
 import { RegistryProvider } from '@effect/atom-react';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { serverUrlAtom } from '@workspace/client-runtime';
 import { Toaster } from '@workspace/ui/components/toast';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { routeTree } from './routeTree.gen';
+
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const router = createRouter({
   routeTree,
@@ -26,7 +29,7 @@ if (!rootElement?.innerHTML) {
 
   root.render(
     <StrictMode>
-      <RegistryProvider>
+      <RegistryProvider initialValues={[[serverUrlAtom, serverUrl]]}>
         <RouterProvider router={router} />
         <Toaster />
       </RegistryProvider>

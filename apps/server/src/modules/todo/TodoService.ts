@@ -1,4 +1,5 @@
-import { InternalServerError, TodoNotFound } from '@workspace/contracts';
+import { InternalServerError } from '@workspace/contracts';
+import { TodoNotFound } from '@workspace/contracts/modules/todo';
 import { Context, Effect, Layer, Option } from 'effect';
 
 import { TodoRepository } from './TodoRepository';
@@ -9,13 +10,14 @@ export class TodoService extends Context.Service<TodoService>()('@workspace/serv
 
     return {
       list: () =>
-        todoRepository
-          .findAll()
-          .pipe(
-            Effect.catchTag('EffectDrizzleQueryError', () =>
-              Effect.fail(new InternalServerError({ message: 'Failed to load todos.' })),
-            ),
-          ),
+        todoRepository.findAll().pipe(
+          Effect.catchTag('EffectDrizzleQueryError', (error) => {
+            const message = 'Failed to load todos.';
+            return Effect.logError(message, error.cause).pipe(
+              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
+            );
+          }),
+        ),
 
       create: (title: string) =>
         Effect.gen(function* () {
@@ -25,9 +27,12 @@ export class TodoService extends Context.Service<TodoService>()('@workspace/serv
           }
           return created.value;
         }).pipe(
-          Effect.catchTag('EffectDrizzleQueryError', () =>
-            Effect.fail(new InternalServerError({ message: 'Failed to create todo.' })),
-          ),
+          Effect.catchTag('EffectDrizzleQueryError', (error) => {
+            const message = 'Failed to create todo.';
+            return Effect.logError(message, error.cause).pipe(
+              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
+            );
+          }),
         ),
 
       toggle: (todoId: string) =>
@@ -43,9 +48,12 @@ export class TodoService extends Context.Service<TodoService>()('@workspace/serv
           }
           return updated.value;
         }).pipe(
-          Effect.catchTag('EffectDrizzleQueryError', () =>
-            Effect.fail(new InternalServerError({ message: 'Failed to update todo.' })),
-          ),
+          Effect.catchTag('EffectDrizzleQueryError', (error) => {
+            const message = 'Failed to update todo.';
+            return Effect.logError(message, error.cause).pipe(
+              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
+            );
+          }),
         ),
 
       remove: (todoId: string) =>
@@ -55,9 +63,12 @@ export class TodoService extends Context.Service<TodoService>()('@workspace/serv
             return yield* new TodoNotFound({ todoId });
           }
         }).pipe(
-          Effect.catchTag('EffectDrizzleQueryError', () =>
-            Effect.fail(new InternalServerError({ message: 'Failed to delete todo.' })),
-          ),
+          Effect.catchTag('EffectDrizzleQueryError', (error) => {
+            const message = 'Failed to delete todo.';
+            return Effect.logError(message, error.cause).pipe(
+              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
+            );
+          }),
         ),
     };
   }),

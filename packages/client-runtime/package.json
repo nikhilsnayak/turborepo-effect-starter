@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/contracts",
+  "name": "@workspace/client-runtime",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,6 +9,7 @@
     "./modules/*": "./src/modules/*/index.ts"
   },
   "dependencies": {
+    "@workspace/contracts": "workspace:*",
     "effect": "catalog:",
     "typescript": "catalog:"
   }

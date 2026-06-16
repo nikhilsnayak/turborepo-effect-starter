@@ -1,7 +1,7 @@
 import { useAtomValue } from '@effect/atom-react';
+import { todosAtom } from '@workspace/client-runtime/modules/todo';
 import { AsyncResult } from 'effect/unstable/reactivity';
 
-import { todosAtom } from '../atoms';
 import { TodoItem } from './todo-item';
 
 export function TodoList() {

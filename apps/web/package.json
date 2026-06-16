@@ -21,6 +21,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^6.0.2",
+    "@workspace/client-runtime": "workspace:*",
     "@workspace/contracts": "workspace:*",
     "@workspace/ui": "workspace:*",
     "babel-plugin-react-compiler": "^1.0.0",

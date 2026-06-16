@@ -1,35 +1,17 @@
-## Runtime / Package Manager
+## Dependencies
 
-The project uses bunjs as both package manager and runtime
+- No dev dependencies — everything goes under `dependencies`.
+- Shared deps live in the root `package.json` catalog and are consumed via `catalog:`.
+- Exception: `apps/mobile` pins `react`, `react-native`, and `@types/react` to the versions its Expo SDK ships (Expo controls them), not the catalog. Safe because `@workspace/client-runtime` is React-free, so web and mobile can run different React versions.
 
-## Dependency Management
+## Vendored Repositories (`@repos/`)
 
-All the dependencies are treated as normal dependencies. No package should be installed as a dev dependency. If a dependency is used in multiple packages of the monorepo workspace, it should listed in the catalog of root package.json and the catalog version should be used by the packages using the `catalog:*` protocol
+Read-only reference for the libraries they mirror. Don't edit them unless asked, and don't import from them — app code imports from normal package dependencies. Prefer their source and examples over web search or guesses.
 
-## Vendored Repositories
+## Shared Package Modules
 
-This project vendors external repositories under @repos/
-
-- Use vendored repositories as read-only reference material when working with related libraries
-- Prefer examples and patterns from the vendored source code over generated guesses or web search results
-- Do not edit files under @repos/ unless explicitly asked
-- Do not import from @repos/ - application code should continue importing from normal package dependencies
-
-## File Naming
-
-- Web app (`apps/web`): kebab-case (e.g. `app-client.ts`, `todo-list.tsx`).
-- Server (`apps/server`) and shared packages: PascalCase (e.g. `TodoService.ts`, `Schemas.ts`).
-- Framework- or tool-generated files keep their mandated names (e.g. TanStack Router's `routes/index.tsx`, `__root.tsx`, `routeTree.gen.ts`, and entry files like `index.ts` / `main.tsx`).
-
-## Frontend Modules
-
-Each feature lives under `apps/web/src/modules/<feature>/`:
-
-- `atoms.ts` — the data layer (RPC-backed query/mutation atoms).
-- `components/` — small, single-purpose components.
-
-The route component (under `apps/web/src/routes/`) is the composition of a module's components: it owns layout and wiring, while the components in `components/` stay small and contained.
+`@workspace/client-runtime` and `@workspace/contracts` expose each feature as one subpath per module — `@workspace/<pkg>/modules/<feature>`, resolved via a per-module `index.ts` barrel. Module symbols are never re-exported from the package root barrel (`src/index.ts`), which carries only cross-cutting core. Import feature code from its subpath, not the root.
 
 ## Effect
 
-Always read @repos/effect/LLMS.md before writing any Effect code. Inspect @repos/effect/ for examples of idiomatic usage, tests, module structure, and API design. Treat it as the source of truth for Effect patterns.
+Read `@repos/effect/LLMS.md` before writing Effect code, and treat `@repos/effect/` as the source of truth for idiomatic patterns over web search or guesses.

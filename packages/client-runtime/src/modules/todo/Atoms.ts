@@ -1,7 +1,7 @@
 import { AsyncResult, Atom } from 'effect/unstable/reactivity';
 
-import { AppClient } from '@/lib/app-client';
-import { optimisticId } from '@/lib/optimistic';
+import { AppClient } from '../../AppClient';
+import { optimisticId } from '../../Optimistic';
 
 const todosQuery = AppClient.query('listTodos', undefined);
 

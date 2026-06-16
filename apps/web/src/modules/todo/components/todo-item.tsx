@@ -1,5 +1,7 @@
 import { useAtomSet } from '@effect/atom-react';
-import type { Todo } from '@workspace/contracts';
+import { isOptimisticId, messageForCause } from '@workspace/client-runtime';
+import { deleteTodoAtom, toggleTodoAtom } from '@workspace/client-runtime/modules/todo';
+import type { Todo } from '@workspace/contracts/modules/todo';
 import { Button } from '@workspace/ui/components/button';
 import { Checkbox } from '@workspace/ui/components/checkbox';
 import { Field, FieldLabel } from '@workspace/ui/components/field';
@@ -9,18 +11,10 @@ import { Exit } from 'effect';
 import { Trash2 } from 'lucide-react';
 import { startTransition } from 'react';
 
-import { isOptimisticId } from '@/lib/optimistic';
-import { messageForCause } from '@/lib/rpc-error';
-
-import { deleteTodoAtom, toggleTodoAtom } from '../atoms';
-
 export function TodoItem({ todo }: { readonly todo: Todo }) {
   const toggleTodo = useAtomSet(toggleTodoAtom, { mode: 'promiseExit' });
   const deleteTodo = useAtomSet(deleteTodoAtom, { mode: 'promiseExit' });
 
-  // Toggle/delete apply optimistically and instantly, so controls stay
-  // responsive. The only locked state is an unsaved optimistic row: it has no
-  // real id yet, so acting on it would hit the server with a non-existent id.
   const disabled = isOptimisticId(todo.id);
 
   const onToggle = () => {

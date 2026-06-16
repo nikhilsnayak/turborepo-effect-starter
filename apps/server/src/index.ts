@@ -1,6 +1,8 @@
+import { networkInterfaces } from 'node:os';
+
 import { BunHttpServer, BunRuntime } from '@effect/platform-bun';
-import { Config, Effect, Layer } from 'effect';
-import { HttpRouter, HttpServerResponse } from 'effect/unstable/http';
+import { Config, Console, Effect, Layer } from 'effect';
+import { HttpRouter, HttpServer, HttpServerResponse } from 'effect/unstable/http';
 import { RpcSerialization, RpcServer } from 'effect/unstable/rpc';
 
 import { DbService } from './lib/db';
@@ -19,13 +21,33 @@ const CorsLive = Layer.unwrap(
   }),
 );
 
-const HttpLive = Layer.mergeAll(RpcLive, HealthRoute, CorsLive).pipe(
+const ListenBanner = Layer.effectDiscard(
+  Effect.gen(function* () {
+    const { address } = yield* HttpServer.HttpServer;
+    if (address._tag !== 'TcpAddress') return;
+    const lines = [`  ➜  Local:    http://localhost:${address.port}/`];
+    for (const iface of Object.values(networkInterfaces()).flat()) {
+      if (iface?.family === 'IPv4' && !iface.internal) {
+        lines.push(`  ➜  Network:  http://${iface.address}:${address.port}/`);
+      }
+    }
+    yield* Console.log(lines.join('\n'));
+  }),
+);
+
+const AppLayer = Layer.mergeAll(RpcLive, HealthRoute, CorsLive).pipe(
   Layer.provide(RpcServer.layerProtocolHttp({ path: '/rpc' })),
   Layer.provide(RpcSerialization.layerNdjson),
   Layer.provide(DbService.layer),
-  HttpRouter.serve,
+);
+
+const HttpLive = HttpRouter.serve(AppLayer, { disableListenLog: true }).pipe(
+  Layer.merge(ListenBanner),
   Layer.provide(
-    BunHttpServer.layerConfig({ port: Config.number('PORT').pipe(Config.withDefault(8008)) }),
+    BunHttpServer.layerConfig({
+      hostname: Config.string('HOST').pipe(Config.withDefault('0.0.0.0')),
+      port: Config.number('PORT').pipe(Config.withDefault(8008)),
+    }),
   ),
 );
 
