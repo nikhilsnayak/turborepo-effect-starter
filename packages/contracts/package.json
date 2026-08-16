@@ -1,5 +1,5 @@
 {
-  "name": "@turborepo-effect-starter/contracts",
+  "name": "@repo/contracts",
   "version": "0.0.0",
   "private": true,
   "type": "module",

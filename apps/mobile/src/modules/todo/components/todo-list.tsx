@@ -1,6 +1,6 @@
 import { useAtomValue } from '@effect/atom-react';
-import { messageForCause } from '@turborepo-effect-starter/client-runtime';
-import { todosAtom } from '@turborepo-effect-starter/client-runtime/modules/todo';
+import { messageForCause } from '@repo/client-runtime';
+import { todosAtom } from '@repo/client-runtime/modules/todo';
 import { AsyncResult } from 'effect/unstable/reactivity';
 import { FlatList, StyleSheet, Text } from 'react-native';
 
@@ -13,11 +13,11 @@ export function TodoList() {
     onInitial: () => <Text style={styles.muted}>Loading…</Text>,
     onFailure: (failure) => <Text style={styles.error}>{messageForCause(failure.cause)}</Text>,
     onSuccess: (result) =>
-      result.value.todos.length === 0 ? (
+      result.value.length === 0 ? (
         <Text style={styles.muted}>Nothing yet. Add your first todo.</Text>
       ) : (
         <FlatList
-          data={result.value.todos}
+          data={result.value}
           keyExtractor={(todo) => todo.id}
           style={styles.list}
           contentContainerStyle={styles.listContent}

@@ -1,14 +1,17 @@
-import '@turborepo-effect-starter/ui/globals.css';
+import '@repo/ui/globals.css';
 import { RegistryProvider } from '@effect/atom-react';
+import { serverUrlAtom } from '@repo/client-runtime';
+import { Toaster } from '@repo/ui/components/toast';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-import { serverUrlAtom } from '@turborepo-effect-starter/client-runtime';
-import { Toaster } from '@turborepo-effect-starter/ui/components/toast';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { routeTree } from './routeTree.gen';
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
+if (serverUrl === undefined) {
+  throw new Error('VITE_SERVER_URL is required.');
+}
 
 const router = createRouter({
   routeTree,
@@ -23,16 +26,17 @@ declare module '@tanstack/react-router' {
 }
 
 const rootElement = document.getElementById('root');
-
-if (!rootElement?.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement!);
-
-  root.render(
-    <StrictMode>
-      <RegistryProvider initialValues={[[serverUrlAtom, serverUrl]]}>
-        <RouterProvider router={router} />
-        <Toaster />
-      </RegistryProvider>
-    </StrictMode>,
-  );
+if (rootElement === null) {
+  throw new Error('Root element not found.');
 }
+
+const root = ReactDOM.createRoot(rootElement);
+
+root.render(
+  <StrictMode>
+    <RegistryProvider initialValues={[[serverUrlAtom, serverUrl]]}>
+      <RouterProvider router={router} />
+      <Toaster />
+    </RegistryProvider>
+  </StrictMode>,
+);

@@ -1,6 +1,7 @@
-import { Label } from '@turborepo-effect-starter/ui/components/label';
-import { Separator } from '@turborepo-effect-starter/ui/components/separator';
-import { cn } from '@turborepo-effect-starter/ui/lib/utils';
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- This primitive groups controls without imposing fieldset semantics. */
+import { Label } from '@repo/ui/components/label';
+import { Separator } from '@repo/ui/components/separator';
+import { cn } from '@repo/ui/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useMemo } from 'react';
 

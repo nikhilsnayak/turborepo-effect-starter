@@ -1,42 +1,26 @@
 import { Schema } from 'effect';
 
-export const TodoDto = Schema.Struct({
-  id: Schema.String,
+import { TodoId } from '../../Identifiers.ts';
+
+export const Todo = Schema.Struct({
+  id: TodoId,
   title: Schema.String,
   completed: Schema.Boolean,
   createdAt: Schema.String,
   updatedAt: Schema.String,
 });
+export type Todo = typeof Todo.Type;
 
-export type Todo = typeof TodoDto.Type;
-
-export const CreateTodoPayload = Schema.Struct({
-  title: Schema.Trimmed.check(Schema.isMinLength(1, { message: 'Title is required' })),
+export const TodoCreateInput = Schema.Struct({
+  title: Schema.Trimmed.check(Schema.isNonEmpty()),
 });
+export type TodoCreateInput = typeof TodoCreateInput.Type;
 
-export const ToggleTodoPayload = Schema.Struct({
-  todoId: Schema.String,
+export const TodoMutationInput = Schema.Struct({
+  todoId: TodoId,
 });
+export type TodoMutationInput = typeof TodoMutationInput.Type;
 
-export const DeleteTodoPayload = Schema.Struct({
-  todoId: Schema.String,
-});
-
-export const ListTodosSuccess = Schema.Struct({
-  todos: Schema.Array(TodoDto),
-});
-
-export const CreateTodoSuccess = Schema.Struct({
-  todo: TodoDto,
-});
-
-export const ToggleTodoSuccess = Schema.Struct({
-  todo: TodoDto,
-});
-
-export class TodoNotFound extends Schema.TaggedErrorClass<TodoNotFound>()(
-  '@turborepo-effect-starter/contracts/TodoNotFound',
-  {
-    todoId: Schema.String,
-  },
-) {}
+export class TodoNotFound extends Schema.TaggedError<TodoNotFound>()('TodoNotFound', {
+  todoId: TodoId,
+}) {}

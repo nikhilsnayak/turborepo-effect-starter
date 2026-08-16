@@ -1,17 +1,22 @@
 ## Dependencies
 
-- No dev dependencies — everything goes under `dependencies`.
-- Shared deps live in the root `package.json` catalog and are consumed via `catalog:`.
-- Exception: `apps/mobile` pins `react`, `react-native`, and `@types/react` to the versions its Expo SDK ships (Expo controls them), not the catalog. Safe because `@turborepo-effect-starter/client-runtime` is React-free, so web and mobile can run different React versions.
+- No `devDependencies`; shared versions use the root catalog and `catalog:`.
+- `apps/mobile` must pin Expo's `react`, `react-native`, and `@types/react` versions.
 
-## Vendored Repositories (`@repos/`)
+## References
 
-Read-only reference for the libraries they mirror. Don't edit them unless asked, and don't import from them — app code imports from normal package dependencies. Prefer their source and examples over web search or guesses.
+- `repos/` contains read-only references. Never edit or import from them; prefer them over web
+  sources.
+- Read `repos/effect/LLMS.md` before writing Effect code.
 
-## Shared Package Modules
+## Code
 
-`@turborepo-effect-starter/client-runtime` and `@turborepo-effect-starter/contracts` expose each feature as one subpath per module — `@turborepo-effect-starter/<pkg>/modules/<feature>`, resolved via a per-module `index.ts` barrel. Module symbols are never re-exported from the package root barrel (`src/index.ts`), which carries only cross-cutting core. Import feature code from its subpath, not the root.
+- Import features from `@repo/<pkg>/modules/<feature>`, never package roots. Use direct-file exports
+  for single-file modules and barrels only for real aggregates.
+- React Compiler is enabled; avoid manual memoization without measured need.
+- Use path-qualified Effect service identifiers, named `Effect.fn` operations, `*Layer` layer names,
+  and `layerTest` for reusable fakes.
 
-## Effect
+## Verify
 
-Read `@repos/effect/LLMS.md` before writing Effect code, and treat `@repos/effect/` as the source of truth for idiomatic patterns over web search or guesses.
+Run `bun run check`, `bun run test`, and `bun run build` from the repository root.

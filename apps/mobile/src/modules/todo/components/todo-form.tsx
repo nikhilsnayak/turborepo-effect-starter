@@ -1,6 +1,6 @@
 import { useAtomSet } from '@effect/atom-react';
-import { messageForCause } from '@turborepo-effect-starter/client-runtime';
-import { createTodoAtom } from '@turborepo-effect-starter/client-runtime/modules/todo';
+import { messageForCause } from '@repo/client-runtime';
+import { createTodoAtom } from '@repo/client-runtime/modules/todo';
 import { Exit } from 'effect';
 import { startTransition, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';

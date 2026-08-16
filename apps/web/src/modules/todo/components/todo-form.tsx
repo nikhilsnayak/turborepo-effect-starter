@@ -1,10 +1,10 @@
 import { useAtomSet } from '@effect/atom-react';
-import { messageForCause } from '@turborepo-effect-starter/client-runtime';
-import { createTodoAtom } from '@turborepo-effect-starter/client-runtime/modules/todo';
-import { Button } from '@turborepo-effect-starter/ui/components/button';
-import { Field, FieldDescription, FieldLabel } from '@turborepo-effect-starter/ui/components/field';
-import { Input } from '@turborepo-effect-starter/ui/components/input';
-import { toast } from '@turborepo-effect-starter/ui/components/toast';
+import { messageForCause } from '@repo/client-runtime';
+import { createTodoAtom } from '@repo/client-runtime/modules/todo';
+import { Button } from '@repo/ui/components/button';
+import { Field, FieldDescription, FieldLabel } from '@repo/ui/components/field';
+import { Input } from '@repo/ui/components/input';
+import { toast } from '@repo/ui/components/toast';
 import { Exit } from 'effect';
 import { startTransition, useState } from 'react';
 
@@ -18,7 +18,7 @@ export function TodoForm() {
 
     setTitle('');
     startTransition(async () => {
-      const exit = await createTodo({ payload: { title } });
+      const exit = await createTodo({ payload: { title: trimmed } });
       if (Exit.isFailure(exit)) toast.error(messageForCause(exit.cause));
     });
   };

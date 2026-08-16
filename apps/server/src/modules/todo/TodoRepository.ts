@@ -1,54 +1,48 @@
-import { desc, eq } from 'drizzle-orm';
+import { type TodoId } from '@repo/contracts';
+import { eq, sql } from 'drizzle-orm';
 import { Context, Effect, Layer, Option } from 'effect';
 
-import { Todos, DbService } from '@/lib/db';
+import { DbService, Todos } from '@/lib/db';
 
 export class TodoRepository extends Context.Service<TodoRepository>()(
-  '@turborepo-effect-starter/server/TodoRepository',
+  '@repo/server/modules/todo/TodoRepository',
   {
     make: Effect.gen(function* () {
       const db = yield* DbService;
 
-      return {
-        findAll: () => db.select().from(Todos).orderBy(desc(Todos.createdAt)),
+      const findAll = Effect.fn('TodoRepository.findAll')(() =>
+        db.query.Todos.findMany({ orderBy: { createdAt: 'desc' } }),
+      );
 
-        findById: (id: string) =>
-          db.query.Todos.findFirst({
-            where: {
-              id,
-            },
-          }).pipe(Effect.map(Option.fromNullishOr)),
+      const create = Effect.fn('TodoRepository.create')((title: string) =>
+        db
+          .insert(Todos)
+          .values({ title })
+          .returning()
+          .pipe(Effect.map((rows) => Option.fromNullishOr(rows[0]))),
+      );
 
-        create: (title: string) =>
-          db
-            .insert(Todos)
-            .values({ title })
-            .returning()
-            .pipe(
-              Effect.map((rows) => rows[0]),
-              Effect.map(Option.fromNullishOr),
-            ),
+      const toggle = Effect.fn('TodoRepository.toggle')((todoId: TodoId) =>
+        db
+          .update(Todos)
+          .set({ completed: sql`NOT ${Todos.completed}` })
+          .where(eq(Todos.id, todoId))
+          .returning()
+          .pipe(Effect.map((rows) => Option.fromNullishOr(rows[0]))),
+      );
 
-        setCompleted: (id: string, completed: boolean) =>
-          db
-            .update(Todos)
-            .set({ completed })
-            .where(eq(Todos.id, id))
-            .returning()
-            .pipe(
-              Effect.map((rows) => rows[0]),
-              Effect.map(Option.fromNullishOr),
-            ),
+      const remove = Effect.fn('TodoRepository.remove')((todoId: TodoId) =>
+        db
+          .delete(Todos)
+          .where(eq(Todos.id, todoId))
+          .returning({ id: Todos.id })
+          .pipe(Effect.map((rows) => rows.length > 0)),
+      );
 
-        remove: (id: string) =>
-          db
-            .delete(Todos)
-            .where(eq(Todos.id, id))
-            .returning()
-            .pipe(Effect.map((rows) => rows.length > 0)),
-      };
+      return { findAll, create, toggle, remove };
     }),
   },
 ) {
   static readonly layer = Layer.effect(this, this.make);
+  static readonly layerTest = Layer.mock(this);
 }

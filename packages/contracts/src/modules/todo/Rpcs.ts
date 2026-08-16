@@ -1,34 +1,27 @@
 import { Schema } from 'effect';
 import { Rpc, RpcGroup } from 'effect/unstable/rpc';
 
-import { InternalServerError } from '../../InternalServerError';
-import {
-  CreateTodoPayload,
-  CreateTodoSuccess,
-  DeleteTodoPayload,
-  ListTodosSuccess,
-  ToggleTodoPayload,
-  ToggleTodoSuccess,
-  TodoNotFound,
-} from './Schemas';
+import { InternalServerError } from '../../InternalServerError.ts';
+import { Todo, TodoCreateInput, TodoMutationInput, TodoNotFound } from './Schemas.ts';
 
 export const TodoRpcs = RpcGroup.make(
-  Rpc.make('listTodos', {
-    success: ListTodosSuccess,
+  Rpc.make('List', {
+    payload: Schema.Void,
+    success: Schema.Array(Todo),
     error: InternalServerError,
   }),
-  Rpc.make('createTodo', {
-    payload: CreateTodoPayload,
-    success: CreateTodoSuccess,
+  Rpc.make('Create', {
+    payload: TodoCreateInput,
+    success: Todo,
     error: InternalServerError,
   }),
-  Rpc.make('toggleTodo', {
-    payload: ToggleTodoPayload,
-    success: ToggleTodoSuccess,
+  Rpc.make('Toggle', {
+    payload: TodoMutationInput,
+    success: Todo,
     error: Schema.Union([TodoNotFound, InternalServerError]),
   }),
-  Rpc.make('deleteTodo', {
-    payload: DeleteTodoPayload,
+  Rpc.make('Delete', {
+    payload: TodoMutationInput,
     error: Schema.Union([TodoNotFound, InternalServerError]),
   }),
-);
+).prefix('Todo.');

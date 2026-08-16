@@ -1,8 +1,9 @@
-import { cn } from '@turborepo-effect-starter/ui/lib/utils';
+import { cn } from '@repo/ui/lib/utils';
 import * as React from 'react';
 
 function Label({ className, ...props }: React.ComponentProps<'label'>) {
   return (
+    // oxlint-disable-next-line jsx-a11y/label-has-associated-control -- The generated primitive receives htmlFor or wrapping content through props.
     <label
       data-slot='label'
       className={cn(

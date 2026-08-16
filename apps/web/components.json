@@ -14,8 +14,8 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "utils": "@turborepo-effect-starter/ui/lib/utils",
-    "ui": "@turborepo-effect-starter/ui/components"
+    "utils": "@repo/ui/lib/utils",
+    "ui": "@repo/ui/components"
   },
   "rtl": false,
   "menuColor": "default",

@@ -1,3 +1,3 @@
-import { TodoRpcs } from './modules/todo/Rpcs';
+import { TodoRpcs } from './modules/todo/Rpcs.ts';
 
 export const AppRpcs = TodoRpcs;

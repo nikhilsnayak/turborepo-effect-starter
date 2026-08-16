@@ -1,77 +1,47 @@
-import { InternalServerError } from '@turborepo-effect-starter/contracts';
-import { TodoNotFound } from '@turborepo-effect-starter/contracts/modules/todo';
+import { InternalServerError, type TodoId } from '@repo/contracts';
+import { TodoNotFound } from '@repo/contracts/modules/todo';
 import { Context, Effect, Layer, Option } from 'effect';
 
-import { TodoRepository } from './TodoRepository';
+import { mapDatabaseFailure } from '@/lib/db';
 
-export class TodoService extends Context.Service<TodoService>()('@turborepo-effect-starter/server/TodoService', {
-  make: Effect.gen(function* () {
-    const todoRepository = yield* TodoRepository;
+import { TodoRepository } from './TodoRepository.ts';
 
-    return {
-      list: () =>
-        todoRepository.findAll().pipe(
-          Effect.catchTag('EffectDrizzleQueryError', (error) => {
-            const message = 'Failed to load todos.';
-            return Effect.logError(message, error.cause).pipe(
-              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
-            );
-          }),
-        ),
+export class TodoService extends Context.Service<TodoService>()(
+  '@repo/server/modules/todo/TodoService',
+  {
+    make: Effect.gen(function* () {
+      const todoRepository = yield* TodoRepository;
 
-      create: (title: string) =>
-        Effect.gen(function* () {
-          const created = yield* todoRepository.create(title);
-          if (Option.isNone(created)) {
-            return yield* new InternalServerError({ message: 'Failed to create todo.' });
-          }
-          return created.value;
-        }).pipe(
-          Effect.catchTag('EffectDrizzleQueryError', (error) => {
-            const message = 'Failed to create todo.';
-            return Effect.logError(message, error.cause).pipe(
-              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
-            );
-          }),
-        ),
+      const list = Effect.fn('TodoService.list')(function* () {
+        return yield* todoRepository.findAll();
+      }, mapDatabaseFailure('Failed to load todos.'));
 
-      toggle: (todoId: string) =>
-        Effect.gen(function* () {
-          const existing = yield* todoRepository.findById(todoId);
-          if (Option.isNone(existing)) {
-            return yield* new TodoNotFound({ todoId });
-          }
+      const create = Effect.fn('TodoService.create')(function* (title: string) {
+        const created = yield* todoRepository.create(title);
+        if (Option.isNone(created)) {
+          return yield* new InternalServerError({ message: 'Failed to create todo.' });
+        }
+        return created.value;
+      }, mapDatabaseFailure('Failed to create todo.'));
 
-          const updated = yield* todoRepository.setCompleted(todoId, !existing.value.completed);
-          if (Option.isNone(updated)) {
-            return yield* new TodoNotFound({ todoId });
-          }
-          return updated.value;
-        }).pipe(
-          Effect.catchTag('EffectDrizzleQueryError', (error) => {
-            const message = 'Failed to update todo.';
-            return Effect.logError(message, error.cause).pipe(
-              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
-            );
-          }),
-        ),
+      const toggle = Effect.fn('TodoService.toggle')(function* (todoId: TodoId) {
+        const updated = yield* todoRepository.toggle(todoId);
+        if (Option.isNone(updated)) {
+          return yield* new TodoNotFound({ todoId });
+        }
+        return updated.value;
+      }, mapDatabaseFailure('Failed to update todo.'));
 
-      remove: (todoId: string) =>
-        Effect.gen(function* () {
-          const deleted = yield* todoRepository.remove(todoId);
-          if (!deleted) {
-            return yield* new TodoNotFound({ todoId });
-          }
-        }).pipe(
-          Effect.catchTag('EffectDrizzleQueryError', (error) => {
-            const message = 'Failed to delete todo.';
-            return Effect.logError(message, error.cause).pipe(
-              Effect.andThen(Effect.fail(new InternalServerError({ message }))),
-            );
-          }),
-        ),
-    };
-  }),
-}) {
-  static readonly layer = Layer.effect(this, this.make).pipe(Layer.provide(TodoRepository.layer));
+      const remove = Effect.fn('TodoService.remove')(function* (todoId: TodoId) {
+        const deleted = yield* todoRepository.remove(todoId);
+        if (!deleted) {
+          return yield* new TodoNotFound({ todoId });
+        }
+      }, mapDatabaseFailure('Failed to delete todo.'));
+
+      return { list, create, toggle, remove };
+    }),
+  },
+) {
+  static readonly layer = Layer.effect(this, this.make);
 }

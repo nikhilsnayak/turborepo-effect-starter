@@ -1,16 +1,16 @@
-import { TodoRpcs } from '@turborepo-effect-starter/contracts/modules/todo';
-import { Effect, Layer } from 'effect';
+import { TodoRpcs } from '@repo/contracts/modules/todo';
+import { Effect } from 'effect';
 
-import { TodoService } from './TodoService';
+import { TodoService } from './TodoService.ts';
 
-export const TodoHandlersLive = TodoRpcs.toLayer(
+export const TodoHandlersLayer = TodoRpcs.toLayer(
   Effect.gen(function* () {
     const todoService = yield* TodoService;
     return TodoRpcs.of({
-      listTodos: () => todoService.list().pipe(Effect.map((todos) => ({ todos }))),
-      createTodo: ({ title }) => todoService.create(title).pipe(Effect.map((todo) => ({ todo }))),
-      toggleTodo: ({ todoId }) => todoService.toggle(todoId).pipe(Effect.map((todo) => ({ todo }))),
-      deleteTodo: ({ todoId }) => todoService.remove(todoId),
+      'Todo.List': () => todoService.list(),
+      'Todo.Create': ({ title }) => todoService.create(title),
+      'Todo.Toggle': ({ todoId }) => todoService.toggle(todoId),
+      'Todo.Delete': ({ todoId }) => todoService.remove(todoId),
     });
   }),
-).pipe(Layer.provide(TodoService.layer));
+);

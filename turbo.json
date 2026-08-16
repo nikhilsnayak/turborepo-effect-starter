@@ -11,19 +11,10 @@
       "cache": false,
       "persistent": true
     },
-    "//#lint": {},
-    "//#lint:fix": {
-      "cache": false
-    },
-    "//#fmt": {
-      "cache": false
-    },
-    "//#fmt:check": {},
-    "//#check": {
-      "dependsOn": ["//#lint", "//#fmt:check"]
-    },
-    "//#fix": {
-      "dependsOn": ["//#lint:fix", "//#fmt"]
+    "test": {},
+    "test:watch": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

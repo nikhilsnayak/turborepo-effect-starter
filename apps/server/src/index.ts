@@ -5,12 +5,11 @@ import { Config, Console, Effect, Layer } from 'effect';
 import { HttpRouter, HttpServer, HttpServerResponse } from 'effect/unstable/http';
 import { RpcSerialization, RpcServer } from 'effect/unstable/rpc';
 
-import { DbService } from './lib/db';
-import { RpcLive } from './Rpc';
+import { RpcLayer } from './Rpc.ts';
 
 const HealthRoute = HttpRouter.add('GET', '/health', HttpServerResponse.text('OK'));
 
-const CorsLive = Layer.unwrap(
+const CorsLayer = Layer.unwrap(
   Effect.gen(function* () {
     const origins = yield* Config.string('CORS_ORIGIN').pipe(
       Config.withDefault('http://localhost:5173'),
@@ -35,13 +34,12 @@ const ListenBanner = Layer.effectDiscard(
   }),
 );
 
-const AppLayer = Layer.mergeAll(RpcLive, HealthRoute, CorsLive).pipe(
+const AppLayer = Layer.mergeAll(RpcLayer, HealthRoute, CorsLayer).pipe(
   Layer.provide(RpcServer.layerProtocolHttp({ path: '/rpc' })),
   Layer.provide(RpcSerialization.layerNdjson),
-  Layer.provide(DbService.layer),
 );
 
-const HttpLive = HttpRouter.serve(AppLayer, { disableListenLog: true }).pipe(
+const HttpLayer = HttpRouter.serve(AppLayer, { disableListenLog: true }).pipe(
   Layer.merge(ListenBanner),
   Layer.provide(
     BunHttpServer.layerConfig({
@@ -51,4 +49,4 @@ const HttpLive = HttpRouter.serve(AppLayer, { disableListenLog: true }).pipe(
   ),
 );
 
-Layer.launch(HttpLive).pipe(BunRuntime.runMain);
+Layer.launch(HttpLayer).pipe(BunRuntime.runMain);
