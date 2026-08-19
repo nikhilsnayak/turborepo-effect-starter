@@ -1,10 +1,11 @@
 import { useAtomSet } from '@effect/atom-react';
-import { isOptimisticId, messageForCause } from '@repo/client-runtime';
-import { deleteTodoAtom, toggleTodoAtom } from '@repo/client-runtime/modules/todo';
-import type { Todo } from '@repo/contracts/modules/todo';
+import { deleteTodoAtom, isOptimisticId, toggleTodoAtom } from '@repo/client-runtime/modules/Todo';
+import type { Todo } from '@repo/contracts/modules/Todo';
 import { Exit } from 'effect';
 import { startTransition } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { messageForTodoActionCause } from '../todo-error-messages.ts';
 
 export function TodoItem({ todo }: { readonly todo: Todo }) {
   const toggleTodo = useAtomSet(toggleTodoAtom, { mode: 'promiseExit' });
@@ -15,14 +16,18 @@ export function TodoItem({ todo }: { readonly todo: Todo }) {
   const onToggle = () => {
     startTransition(async () => {
       const exit = await toggleTodo({ payload: { todoId: todo.id } });
-      if (Exit.isFailure(exit)) Alert.alert('Error', messageForCause(exit.cause));
+      if (Exit.isFailure(exit)) {
+        Alert.alert('Error', messageForTodoActionCause('toggle', exit.cause));
+      }
     });
   };
 
   const onDelete = () => {
     startTransition(async () => {
       const exit = await deleteTodo({ payload: { todoId: todo.id } });
-      if (Exit.isFailure(exit)) Alert.alert('Error', messageForCause(exit.cause));
+      if (Exit.isFailure(exit)) {
+        Alert.alert('Error', messageForTodoActionCause('delete', exit.cause));
+      }
     });
   };
 

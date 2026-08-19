@@ -1,6 +1,5 @@
 import { useAtomValue } from '@effect/atom-react';
-import { messageForCause } from '@repo/client-runtime';
-import { todosAtom } from '@repo/client-runtime/modules/todo';
+import { todosAtom } from '@repo/client-runtime/modules/Todo';
 import { AsyncResult } from 'effect/unstable/reactivity';
 import { FlatList, StyleSheet, Text } from 'react-native';
 
@@ -11,7 +10,7 @@ export function TodoList() {
 
   return AsyncResult.match(todos, {
     onInitial: () => <Text style={styles.muted}>Loading…</Text>,
-    onFailure: (failure) => <Text style={styles.error}>{messageForCause(failure.cause)}</Text>,
+    onFailure: () => <Text style={styles.error}>Failed to load todos. Please try again.</Text>,
     onSuccess: (result) =>
       result.value.length === 0 ? (
         <Text style={styles.muted}>Nothing yet. Add your first todo.</Text>

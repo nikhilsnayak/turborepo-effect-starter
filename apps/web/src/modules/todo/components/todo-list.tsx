@@ -1,5 +1,5 @@
 import { useAtomValue } from '@effect/atom-react';
-import { todosAtom } from '@repo/client-runtime/modules/todo';
+import { todosAtom } from '@repo/client-runtime/modules/Todo';
 import { AsyncResult } from 'effect/unstable/reactivity';
 
 import { TodoItem } from './todo-item';

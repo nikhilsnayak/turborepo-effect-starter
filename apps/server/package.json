@@ -9,12 +9,12 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "test": "bun --bun vitest run",
-    "test:watch": "bun --bun vitest --watch"
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@effect/platform-bun": "catalog:",
-    "@effect/sql-pg": "catalog:",
+    "@effect/platform-bun": "4.0.0-rc.110",
+    "@effect/sql-pg": "4.0.0-rc.110",
     "@effect/vitest": "catalog:",
     "@repo/contracts": "workspace:*",
     "@types/bun": "catalog:",

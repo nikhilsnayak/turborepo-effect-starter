@@ -1,17 +1,17 @@
-import { type TodoId } from '@repo/contracts';
+import { type TodoId } from '@repo/contracts/modules/Todo';
 import { eq, sql } from 'drizzle-orm';
 import { Context, Effect, Layer, Option } from 'effect';
 
 import { DbService, Todos } from '@/lib/db';
 
 export class TodoRepository extends Context.Service<TodoRepository>()(
-  '@repo/server/modules/todo/TodoRepository',
+  '@repo/server/Todo/TodoRepository',
   {
     make: Effect.gen(function* () {
       const db = yield* DbService;
 
-      const findAll = Effect.fn('TodoRepository.findAll')(() =>
-        db.query.Todos.findMany({ orderBy: { createdAt: 'desc' } }),
+      const findAll = db.query.Todos.findMany({ orderBy: { createdAt: 'desc' } }).pipe(
+        Effect.withSpan('TodoRepository.findAll'),
       );
 
       const create = Effect.fn('TodoRepository.create')((title: string) =>

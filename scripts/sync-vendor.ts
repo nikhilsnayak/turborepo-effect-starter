@@ -5,6 +5,7 @@ type Vendor = {
   readonly repository: string;
   readonly ref: string;
   readonly prefix: string;
+  readonly requiredPaths: ReadonlyArray<string>;
 };
 
 const vendors = {
@@ -12,6 +13,7 @@ const vendors = {
     repository: 'https://github.com/Effect-TS/effect.git',
     ref: 'main',
     prefix: 'repos/effect',
+    requiredPaths: ['LLMS.md', 'packages/effect/src/unstable/workflow/Workflow.ts'],
   },
 } satisfies Record<string, Vendor>;
 
@@ -43,11 +45,23 @@ const output = async (command: ReadonlyArray<string>, cwd?: string) => {
   return { exitCode, stdout: stdout.trim(), stderr: stderr.trim() };
 };
 
-const hasSubtreeMetadata = async (vendor: Vendor, root: string) => {
+export const parseSubtreeSplit = (message: string): string | undefined =>
+  /^git-subtree-split: ([0-9a-f]{40})$/m.exec(message)?.[1];
+
+export const parseRemoteCommit = (remoteOutput: string, ref: string): string | undefined => {
+  const lines = remoteOutput.trim().split('\n');
+  if (lines.length !== 1) return undefined;
+  const [commit, remoteRef, extra] = lines[0]!.trim().split(/\s+/);
+  if (extra !== undefined || remoteRef !== `refs/heads/${ref}`) return undefined;
+  return /^[0-9a-f]{40}$/.test(commit ?? '') ? commit : undefined;
+};
+
+const subtreeSplit = async (vendor: Vendor, root: string) => {
   const log = await output(
     [
       'git',
       'log',
+      '-1',
       '--format=%B',
       '--fixed-strings',
       `--grep=git-subtree-dir: ${vendor.prefix}`,
@@ -56,7 +70,37 @@ const hasSubtreeMetadata = async (vendor: Vendor, root: string) => {
     root,
   );
 
-  return log.exitCode === 0 && log.stdout.includes(`git-subtree-dir: ${vendor.prefix}`);
+  if (log.exitCode !== 0) return undefined;
+  return parseSubtreeSplit(log.stdout);
+};
+
+const resolveRemoteCommit = async (vendor: Vendor, root: string) => {
+  const remote = await output(
+    ['git', 'ls-remote', '--exit-code', vendor.repository, `refs/heads/${vendor.ref}`],
+    root,
+  );
+  const commit = parseRemoteCommit(remote.stdout, vendor.ref);
+
+  if (remote.exitCode !== 0 || commit === undefined) {
+    throw new Error(`Could not resolve ${vendor.repository}#${vendor.ref}.`);
+  }
+
+  return commit;
+};
+
+const fetchRemoteCommit = async (vendor: Vendor, commit: string, root: string) => {
+  const fetched = await run(['git', 'fetch', '--no-tags', vendor.repository, commit], root);
+
+  if (fetched !== 0) {
+    throw new Error(`Could not fetch ${vendor.repository} at ${commit}.`);
+  }
+
+  const fetchHead = await output(['git', 'rev-parse', '--verify', 'FETCH_HEAD^{commit}'], root);
+  if (fetchHead.exitCode !== 0 || fetchHead.stdout !== commit) {
+    throw new Error(
+      `Fetched ${fetchHead.stdout || 'nothing'} instead of expected commit ${commit}.`,
+    );
+  }
 };
 
 const assertNoGitlinks = async (vendor: Vendor, root: string) => {
@@ -74,29 +118,24 @@ const assertNoGitlinks = async (vendor: Vendor, root: string) => {
 const sync = async (name: VendorName, root: string) => {
   const vendor = vendors[name];
   const prefixExists = existsSync(`${root}/${vendor.prefix}`);
-  const metadataExists = await hasSubtreeMetadata(vendor, root);
+  const existingSplit = await subtreeSplit(vendor, root);
 
-  if (prefixExists && !metadataExists) {
+  if (prefixExists && existingSplit === undefined) {
     throw new Error(
       `${vendor.prefix} exists without git subtree metadata. Remove the copied directory in a clean commit before retrying.`,
     );
   }
 
-  const operation = prefixExists ? 'pull' : 'add';
+  const remoteCommit = await resolveRemoteCommit(vendor, root);
+  await fetchRemoteCommit(vendor, remoteCommit, root);
+
+  const operation = prefixExists ? 'merge' : 'add';
   console.log(
     `${operation === 'add' ? 'Adding' : 'Syncing'} ${name} from ${vendor.repository}#${vendor.ref}`,
   );
 
   const exitCode = await run(
-    [
-      'git',
-      'subtree',
-      operation,
-      `--prefix=${vendor.prefix}`,
-      vendor.repository,
-      vendor.ref,
-      '--squash',
-    ],
+    ['git', 'subtree', operation, `--prefix=${vendor.prefix}`, remoteCommit, '--squash'],
     root,
   );
 
@@ -106,11 +145,21 @@ const sync = async (name: VendorName, root: string) => {
     );
   }
 
-  if (!(await hasSubtreeMetadata(vendor, root))) {
-    throw new Error(`The ${name} update did not create reachable git subtree metadata.`);
+  const syncedSplit = await subtreeSplit(vendor, root);
+  if (syncedSplit !== remoteCommit) {
+    throw new Error(
+      `The ${name} subtree recorded ${syncedSplit ?? 'no split commit'} instead of ${remoteCommit}.`,
+    );
   }
 
   await assertNoGitlinks(vendor, root);
+
+  const missingPaths = vendor.requiredPaths.filter(
+    (path) => !existsSync(`${root}/${vendor.prefix}/${path}`),
+  );
+  if (missingPaths.length > 0) {
+    throw new Error(`The ${name} subtree is missing required paths:\n${missingPaths.join('\n')}`);
+  }
 };
 
 const main = async () => {

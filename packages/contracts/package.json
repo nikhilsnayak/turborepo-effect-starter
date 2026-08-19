@@ -5,7 +5,8 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
+    "./AppRpcs": "./src/AppRpcs.ts",
+    "./InternalServerError": "./src/InternalServerError.ts",
     "./modules/*": "./src/modules/*/index.ts"
   },
   "dependencies": {

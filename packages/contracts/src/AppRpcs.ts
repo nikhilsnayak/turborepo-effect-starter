@@ -1,3 +1,11 @@
-import { TodoRpcs } from './modules/todo/Rpcs.ts';
+import { RpcMiddleware } from 'effect/unstable/rpc';
 
-export const AppRpcs = TodoRpcs;
+import { InternalServerError } from './InternalServerError.ts';
+import { TodoRpcs } from './modules/Todo/Rpcs.ts';
+
+export class RpcDefectBoundary extends RpcMiddleware.Service<RpcDefectBoundary>()(
+  '@repo/contracts/RpcDefectBoundary',
+  { error: InternalServerError },
+) {}
+
+export const AppRpcs = TodoRpcs.middleware(RpcDefectBoundary);

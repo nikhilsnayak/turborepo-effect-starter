@@ -16,6 +16,9 @@ app, Expo mobile app, and shared UI package.
    `bun run --cwd apps/server db:migrate`.
 6. Start the workspaces with `bun run dev`.
 
+For the Expo web target, run `bun run --cwd apps/mobile web`. The root build exports that target as
+static files, so both web clients are covered by `bun run build`.
+
 The files under `repos/` are read-only source references. Application code must use package
 dependencies and never import from a vendored repository.
 

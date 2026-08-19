@@ -1,9 +1,10 @@
 import { useAtomSet } from '@effect/atom-react';
-import { messageForCause } from '@repo/client-runtime';
-import { createTodoAtom } from '@repo/client-runtime/modules/todo';
+import { createTodoAtom } from '@repo/client-runtime/modules/Todo';
 import { Exit } from 'effect';
 import { startTransition, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
+import { messageForTodoActionCause } from '../todo-error-messages.ts';
 
 export function TodoForm() {
   const createTodo = useAtomSet(createTodoAtom, { mode: 'promiseExit' });
@@ -16,7 +17,9 @@ export function TodoForm() {
     setTitle('');
     startTransition(async () => {
       const exit = await createTodo({ payload: { title: trimmed } });
-      if (Exit.isFailure(exit)) Alert.alert('Error', messageForCause(exit.cause));
+      if (Exit.isFailure(exit)) {
+        Alert.alert('Error', messageForTodoActionCause('create', exit.cause));
+      }
     });
   };
 

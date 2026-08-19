@@ -1,7 +1,6 @@
 import { useAtomSet } from '@effect/atom-react';
-import { isOptimisticId, messageForCause } from '@repo/client-runtime';
-import { deleteTodoAtom, toggleTodoAtom } from '@repo/client-runtime/modules/todo';
-import type { Todo } from '@repo/contracts/modules/todo';
+import { deleteTodoAtom, isOptimisticId, toggleTodoAtom } from '@repo/client-runtime/modules/Todo';
+import type { Todo } from '@repo/contracts/modules/Todo';
 import { Button } from '@repo/ui/components/button';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { Field, FieldLabel } from '@repo/ui/components/field';
@@ -10,6 +9,8 @@ import { cn } from '@repo/ui/lib/utils';
 import { Exit } from 'effect';
 import { Trash2 } from 'lucide-react';
 import { startTransition } from 'react';
+
+import { messageForTodoActionCause } from '../todo-error-messages.ts';
 
 export function TodoItem({ todo }: { readonly todo: Todo }) {
   const toggleTodo = useAtomSet(toggleTodoAtom, { mode: 'promiseExit' });
@@ -20,14 +21,14 @@ export function TodoItem({ todo }: { readonly todo: Todo }) {
   const onToggle = () => {
     startTransition(async () => {
       const exit = await toggleTodo({ payload: { todoId: todo.id } });
-      if (Exit.isFailure(exit)) toast.error(messageForCause(exit.cause));
+      if (Exit.isFailure(exit)) toast.error(messageForTodoActionCause('toggle', exit.cause));
     });
   };
 
   const onDelete = () => {
     startTransition(async () => {
       const exit = await deleteTodo({ payload: { todoId: todo.id } });
-      if (Exit.isFailure(exit)) toast.error(messageForCause(exit.cause));
+      if (Exit.isFailure(exit)) toast.error(messageForTodoActionCause('delete', exit.cause));
     });
   };
 

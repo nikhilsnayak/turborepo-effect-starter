@@ -5,12 +5,19 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
-    "./modules/todo": "./src/modules/todo/Atoms.ts"
+    "./AppRpcClient": "./src/AppRpcClient.ts",
+    "./Config": "./src/Config.ts",
+    "./modules/Todo": "./src/modules/Todo/Atoms.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
+    "@effect/vitest": "catalog:",
     "@repo/contracts": "workspace:*",
     "effect": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

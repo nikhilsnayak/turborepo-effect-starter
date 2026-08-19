@@ -1,4 +1,4 @@
-import { TodoId } from '@repo/contracts';
+import { TodoId } from '@repo/contracts/modules/Todo';
 import { boolean, snakeCase, text, timestamp } from 'drizzle-orm/pg-core';
 
 const table = snakeCase.table;

@@ -1,12 +1,13 @@
 import { useAtomSet } from '@effect/atom-react';
-import { messageForCause } from '@repo/client-runtime';
-import { createTodoAtom } from '@repo/client-runtime/modules/todo';
+import { createTodoAtom } from '@repo/client-runtime/modules/Todo';
 import { Button } from '@repo/ui/components/button';
 import { Field, FieldDescription, FieldLabel } from '@repo/ui/components/field';
 import { Input } from '@repo/ui/components/input';
 import { toast } from '@repo/ui/components/toast';
 import { Exit } from 'effect';
 import { startTransition, useState } from 'react';
+
+import { messageForTodoActionCause } from '../todo-error-messages.ts';
 
 export function TodoForm() {
   const createTodo = useAtomSet(createTodoAtom, { mode: 'promiseExit' });
@@ -19,7 +20,7 @@ export function TodoForm() {
     setTitle('');
     startTransition(async () => {
       const exit = await createTodo({ payload: { title: trimmed } });
-      if (Exit.isFailure(exit)) toast.error(messageForCause(exit.cause));
+      if (Exit.isFailure(exit)) toast.error(messageForTodoActionCause('create', exit.cause));
     });
   };
 

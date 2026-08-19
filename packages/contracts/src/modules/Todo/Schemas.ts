@@ -1,6 +1,9 @@
 import { Schema } from 'effect';
 
-import { TodoId } from '../../Identifiers.ts';
+const TrimmedNonEmptyString = Schema.Trimmed.check(Schema.isNonEmpty());
+
+export const TodoId = TrimmedNonEmptyString.pipe(Schema.brand('TodoId'));
+export type TodoId = typeof TodoId.Type;
 
 export const Todo = Schema.Struct({
   id: TodoId,
