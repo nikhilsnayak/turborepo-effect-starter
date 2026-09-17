@@ -13,12 +13,12 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@effect/platform-bun": "4.0.0-rc.110",
-    "@effect/sql-pg": "4.0.0-rc.110",
+    "@effect/platform-bun": "4.0.0-rc.115",
+    "@effect/sql-pg": "4.0.0-rc.115",
     "@effect/vitest": "catalog:",
     "@repo/contracts": "workspace:*",
     "@types/bun": "catalog:",
-    "drizzle-kit": "1.0.0-rc.5-ab785fc",
+    "drizzle-kit": "1.0.0-rc.5-5935859",
     "drizzle-orm": "1.0.0-rc.5-169397b",
     "effect": "catalog:",
     "typescript": "catalog:",

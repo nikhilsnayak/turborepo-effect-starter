@@ -12,7 +12,7 @@ const HealthRoute = HttpRouter.add('GET', '/health', HttpServerResponse.text('OK
 
 const CorsLayer = Layer.unwrap(
   Effect.gen(function* () {
-    const origins = yield* Config.string('CORS_ORIGIN').pipe(
+    const origins = yield* Config.String('CORS_ORIGIN').pipe(
       Config.withDefault('http://localhost:5173,http://localhost:8081'),
     );
     return HttpRouter.cors({
@@ -24,7 +24,7 @@ const CorsLayer = Layer.unwrap(
 const ListenBanner = Layer.effectDiscard(
   Effect.gen(function* () {
     const { address } = yield* HttpServer.HttpServer;
-    if (address._tag !== 'TcpAddress') return;
+    if (address._tag === 'UnixPathAddress') return;
     const lines = [`  ➜  Local:    http://localhost:${address.port}/`];
     for (const iface of Object.values(networkInterfaces()).flat()) {
       if (iface?.family === 'IPv4' && !iface.internal) {
@@ -45,8 +45,8 @@ const HttpLayer = HttpRouter.serve(AppLayer, { disableListenLog: true }).pipe(
   Layer.merge(ListenBanner),
   Layer.provide(
     BunHttpServer.layerConfig({
-      hostname: Config.string('HOST').pipe(Config.withDefault('0.0.0.0')),
-      port: Config.number('PORT').pipe(Config.withDefault(8008)),
+      hostname: Config.String('HOST').pipe(Config.withDefault('0.0.0.0')),
+      port: Config.Number('PORT').pipe(Config.withDefault(8008)),
     }),
   ),
 );

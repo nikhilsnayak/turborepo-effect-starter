@@ -1,6 +1,6 @@
 import { assert, describe, it } from '@effect/vitest';
 import { TodoId } from '@repo/contracts/modules/Todo';
-import { Cause, Effect, Exit, Layer, Option } from 'effect';
+import { Cause, Effect, Exit, Layer } from 'effect';
 
 import { TodoRepository } from './TodoRepository.ts';
 import { TodoService } from './TodoService.ts';
@@ -46,9 +46,7 @@ describe('TodoService', () => {
       const exit = yield* Effect.exit(service.create('A todo'));
       assert(Exit.isFailure(exit));
       assert(Cause.hasDies(exit.cause));
-    }).pipe(
-      withRepository(TodoRepository.layerTest({ create: () => Effect.succeed(Option.none()) })),
-    ),
+    }).pipe(withRepository(TodoRepository.layerTest({ create: () => Effect.succeedNone }))),
   );
 
   it.effect('fails with TodoNotFound when toggling a missing todo', () =>
@@ -59,9 +57,7 @@ describe('TodoService', () => {
       if (error._tag === 'TodoNotFound') {
         assert.strictEqual(error.todoId, todoId);
       }
-    }).pipe(
-      withRepository(TodoRepository.layerTest({ toggle: () => Effect.succeed(Option.none()) })),
-    ),
+    }).pipe(withRepository(TodoRepository.layerTest({ toggle: () => Effect.succeedNone }))),
   );
 
   it.effect('fails with TodoNotFound when deleting a missing todo', () =>

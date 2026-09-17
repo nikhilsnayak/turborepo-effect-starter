@@ -15,7 +15,11 @@ export default defineConfig({
     'jsx-a11y',
     'promise',
     'node',
+    'vitest',
   ],
+  categories: {
+    correctness: 'error',
+  },
   options: {
     typeAware: true,
     typeCheck: true,

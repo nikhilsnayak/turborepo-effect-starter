@@ -7,7 +7,7 @@ import * as schema from './Schema.ts';
 
 const relations = defineRelations(schema, () => ({}));
 const PgClientLayer = PgClient.layerConfig({
-  url: Config.redacted('DATABASE_URL'),
+  url: Config.Redacted('DATABASE_URL'),
 });
 
 export class DbService extends Context.Service<DbService>()('@repo/server/Db/DbService', {
