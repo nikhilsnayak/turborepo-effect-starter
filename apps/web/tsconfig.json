@@ -4,7 +4,7 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@repo/ui/*": ["../../packages/ui/src/*"]
+      "@repo/web-ui/*": ["../../packages/web-ui/src/*"]
     }
   }
 }

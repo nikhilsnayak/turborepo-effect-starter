@@ -10,7 +10,7 @@
     "strict": true,
     "noEmit": true,
     "paths": {
-      "@repo/ui/*": ["./src/*"]
+      "@repo/web-ui/*": ["./src/*"]
     }
   },
   "include": ["."],

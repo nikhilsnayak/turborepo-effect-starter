@@ -12,7 +12,7 @@
     "@effect/atom-react": "catalog:",
     "@repo/client-runtime": "workspace:*",
     "@repo/contracts": "workspace:*",
-    "@repo/ui": "workspace:*",
+    "@repo/web-ui": "workspace:*",
     "@rolldown/plugin-babel": "^0.2.4",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/devtools-vite": "^0.8.5",

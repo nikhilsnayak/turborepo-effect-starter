@@ -1,11 +1,11 @@
 import { useAtomSet } from '@effect/atom-react';
 import { deleteTodoAtom, isOptimisticId, toggleTodoAtom } from '@repo/client-runtime/modules/Todo';
 import type { Todo } from '@repo/contracts/modules/Todo';
-import { Button } from '@repo/ui/components/button';
-import { Checkbox } from '@repo/ui/components/checkbox';
-import { Field, FieldLabel } from '@repo/ui/components/field';
-import { toast } from '@repo/ui/components/toast';
-import { cn } from '@repo/ui/lib/utils';
+import { Button } from '@repo/web-ui/components/button';
+import { Checkbox } from '@repo/web-ui/components/checkbox';
+import { Field, FieldLabel } from '@repo/web-ui/components/field';
+import { toast } from '@repo/web-ui/components/toast';
+import { cn } from '@repo/web-ui/lib/utils';
 import { Exit } from 'effect';
 import { Trash2 } from 'lucide-react';
 import { startTransition } from 'react';

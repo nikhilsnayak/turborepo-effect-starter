@@ -1,7 +1,7 @@
-import '@repo/ui/globals.css';
+import '@repo/web-ui/globals.css';
 import { RegistryProvider } from '@effect/atom-react';
 import { serverUrlAtom } from '@repo/client-runtime/Config';
-import { Toaster } from '@repo/ui/components/toast';
+import { Toaster } from '@repo/web-ui/components/toast';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';

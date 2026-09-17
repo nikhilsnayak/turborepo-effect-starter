@@ -1,9 +1,9 @@
 import { useAtomSet } from '@effect/atom-react';
 import { createTodoAtom } from '@repo/client-runtime/modules/Todo';
-import { Button } from '@repo/ui/components/button';
-import { Field, FieldDescription, FieldLabel } from '@repo/ui/components/field';
-import { Input } from '@repo/ui/components/input';
-import { toast } from '@repo/ui/components/toast';
+import { Button } from '@repo/web-ui/components/button';
+import { Field, FieldDescription, FieldLabel } from '@repo/web-ui/components/field';
+import { Input } from '@repo/web-ui/components/input';
+import { toast } from '@repo/web-ui/components/toast';
 import { Exit } from 'effect';
 import { startTransition, useState } from 'react';
 
