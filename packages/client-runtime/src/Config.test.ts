@@ -1,6 +1,6 @@
 import { assert, it } from '@effect/vitest';
 import { Effect } from 'effect';
-import { Atom, AtomRegistry } from 'effect/unstable/reactivity';
+import { Atom, AtomRegistry } from 'effect/reactivity';
 
 import { serverUrlAtom } from './Config.ts';
 

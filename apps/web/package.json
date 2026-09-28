@@ -16,11 +16,11 @@
     "@rolldown/plugin-babel": "^0.2.4",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/devtools-vite": "^0.8.5",
-    "@tanstack/react-devtools": "^0.10.12",
-    "@tanstack/react-router": "^1.170.38",
+    "@tanstack/react-devtools": "^0.10.13",
+    "@tanstack/react-router": "^1.170.40",
     "@tanstack/react-router-devtools": "^1.167.2",
-    "@tanstack/router-plugin": "^1.168.40",
-    "@types/node": "^26.6.1",
+    "@tanstack/router-plugin": "^1.168.41",
+    "@types/node": "^26.6.3",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^6.1.1",
@@ -30,6 +30,6 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "typescript": "catalog:",
-    "vite": "^8.3.0"
+    "vite": "^8.3.1"
   }
 }

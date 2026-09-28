@@ -1,11 +1,11 @@
 import { assert, it } from '@effect/vitest';
 import { RpcDefectBoundary as RpcDefectBoundaryService } from '@repo/contracts/AppRpcs';
 import { InternalServerError } from '@repo/contracts/InternalServerError';
-import { TodoRpcs } from '@repo/contracts/modules/Todo';
+import { TodoId, TodoNotFound, TodoRpcs } from '@repo/contracts/modules/Todo';
 import { Cause, Effect, Exit, Layer, Logger, Option, References, Schema } from 'effect';
-import { Headers } from 'effect/unstable/http';
-import { Rpc } from 'effect/unstable/rpc';
-import { RequestId } from 'effect/unstable/rpc/RpcMessage';
+import { Headers, HttpRouter } from 'effect/http';
+import { Rpc, RpcGroup, RpcSerialization, RpcServer } from 'effect/rpc';
+import { RequestId } from 'effect/rpc/RpcMessage';
 
 import { RpcDefectBoundaryLayer } from './RpcDefectBoundary.ts';
 
@@ -62,5 +62,71 @@ it.effect('returns a public error and logs the original defect cause', () =>
     assert.strictEqual(logs[1]?.annotations['rpc'], 'Todo.List');
     assert.strictEqual(logs[1]?.annotations['requestId'], 'request-1');
     assert.strictEqual(Cause.squash(logs[1]!.cause), defect);
+  }),
+);
+
+it.effect('exposes the middleware error for an RPC without a declared error', () =>
+  Effect.gen(function* () {
+    const defect = new Error('private database detail');
+    const TestRpcs = RpcGroup.make(Rpc.make('Test.Defect', { success: Schema.Void })).middleware(
+      RpcDefectBoundaryService,
+    );
+    const layer = RpcServer.layer(TestRpcs).pipe(
+      Layer.provide(TestRpcs.toLayer({ 'Test.Defect': () => Effect.die(defect) })),
+      Layer.provide(RpcDefectBoundaryLayer),
+      Layer.provide(RpcServer.layerProtocolHttp({ path: '/rpc' })),
+      Layer.provide(RpcSerialization.layerNdjson),
+      Layer.provide(Logger.layer([])),
+    );
+    const app = HttpRouter.toWebHandler(layer, { disableLogger: true });
+    yield* Effect.addFinalizer(() => Effect.promise(() => app.dispose()));
+
+    const response = yield* Effect.promise(() =>
+      app.handler(
+        new Request('https://api.example.test/rpc', {
+          method: 'POST',
+          headers: { 'content-type': 'application/ndjson' },
+          body: '{"_tag":"Request","id":"1","tag":"Test.Defect","payload":null,"headers":[]}\n',
+        }),
+      ),
+    );
+    const body = yield* Effect.promise(() => response.text());
+    assert.include(body, 'InternalServerError');
+    assert.notInclude(body, defect.message);
+  }),
+);
+
+it.effect('preserves an expected RPC error', () =>
+  Effect.gen(function* () {
+    const todoId = TodoId.make('missing-todo');
+    const TestRpcs = RpcGroup.make(
+      Rpc.make('Test.Expected', { success: Schema.Void, error: TodoNotFound }),
+    ).middleware(RpcDefectBoundaryService);
+    const layer = RpcServer.layer(TestRpcs).pipe(
+      Layer.provide(
+        TestRpcs.toLayer({
+          'Test.Expected': () => Effect.fail(new TodoNotFound({ todoId })),
+        }),
+      ),
+      Layer.provide(RpcDefectBoundaryLayer),
+      Layer.provide(RpcServer.layerProtocolHttp({ path: '/rpc' })),
+      Layer.provide(RpcSerialization.layerNdjson),
+      Layer.provide(Logger.layer([])),
+    );
+    const app = HttpRouter.toWebHandler(layer, { disableLogger: true });
+    yield* Effect.addFinalizer(() => Effect.promise(() => app.dispose()));
+
+    const response = yield* Effect.promise(() =>
+      app.handler(
+        new Request('https://api.example.test/rpc', {
+          method: 'POST',
+          headers: { 'content-type': 'application/ndjson' },
+          body: '{"_tag":"Request","id":"1","tag":"Test.Expected","payload":null,"headers":[]}\n',
+        }),
+      ),
+    );
+    const body = yield* Effect.promise(() => response.text());
+    assert.include(body, 'TodoNotFound');
+    assert.notInclude(body, 'InternalServerError');
   }),
 );

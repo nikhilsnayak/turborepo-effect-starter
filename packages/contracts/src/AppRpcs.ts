@@ -1,4 +1,4 @@
-import { RpcMiddleware } from 'effect/unstable/rpc';
+import { RpcMiddleware } from 'effect/rpc';
 
 import { InternalServerError } from './InternalServerError.ts';
 import { TodoRpcs } from './modules/Todo/Rpcs.ts';

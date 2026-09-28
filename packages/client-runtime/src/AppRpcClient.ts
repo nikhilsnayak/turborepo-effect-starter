@@ -1,8 +1,8 @@
 import { AppRpcs } from '@repo/contracts/AppRpcs';
 import { Layer } from 'effect';
-import { FetchHttpClient } from 'effect/unstable/http';
-import { AtomRpc } from 'effect/unstable/reactivity';
-import { RpcClient, RpcSerialization } from 'effect/unstable/rpc';
+import { FetchHttpClient } from 'effect/http';
+import { AtomRpc } from 'effect/reactivity';
+import { RpcClient, RpcSerialization } from 'effect/rpc';
 
 import { serverUrlAtom } from './Config.ts';
 

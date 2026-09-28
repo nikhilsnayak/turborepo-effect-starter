@@ -1,7 +1,6 @@
-import { InternalServerError } from '@repo/contracts/InternalServerError';
 import { EffectDrizzleQueryError } from 'drizzle-orm/effect-core';
 import { Effect, Metric, Schema } from 'effect';
-import { SqlError } from 'effect/unstable/sql';
+import { SqlError } from 'effect/sql';
 
 type DatabaseFailure = EffectDrizzleQueryError | SqlError.SqlError;
 
@@ -13,25 +12,20 @@ const databaseFailures = Metric.counter('app_database_failures_total', {
   incremental: true,
 });
 
-export const mapDatabaseFailure = (operation: string) =>
-  function map<A, E, R>(
+export const dieOnDatabaseFailure = (operation: string) =>
+  function dieOnFailure<A, E, R>(
     effect: Effect.Effect<A, E, R>,
-  ): Effect.Effect<A, Exclude<E, Extract<E, DatabaseFailure>> | InternalServerError, R> {
+  ): Effect.Effect<A, Exclude<E, Extract<E, DatabaseFailure>>, R> {
     return effect.pipe(
       Effect.catchIf(
         isDatabaseFailure,
-        (error) =>
-          Metric.update(databaseFailures.pipe(Metric.withAttributes({ operation })), 1).pipe(
-            Effect.andThen(
-              Effect.logError('Database operation failed.').pipe(
-                Effect.annotateLogs({
-                  operation,
-                  databaseErrorType: error._tag,
-                }),
-              ),
-            ),
-            Effect.andThen(Effect.fail(new InternalServerError({}))),
-          ),
+        (error) => {
+          const cause = SqlError.isSqlError(error) ? error : error.cause;
+          const reason = SqlError.isSqlError(cause) ? cause.reason._tag : error._tag;
+          return Metric.update(databaseFailures.pipe(Metric.withAttributes({ operation })), 1).pipe(
+            Effect.andThen(Effect.die(new Error(`Database failure in ${operation}: ${reason}.`))),
+          );
+        },
         Effect.fail,
       ),
     );

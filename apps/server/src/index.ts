@@ -2,8 +2,8 @@ import { networkInterfaces } from 'node:os';
 
 import { BunHttpServer, BunRuntime } from '@effect/platform-bun';
 import { Config, Console, Effect, Layer } from 'effect';
-import { HttpRouter, HttpServer, HttpServerResponse } from 'effect/unstable/http';
-import { RpcSerialization, RpcServer } from 'effect/unstable/rpc';
+import { HttpRouter, HttpServer, HttpServerResponse } from 'effect/http';
+import { RpcSerialization, RpcServer } from 'effect/rpc';
 
 import { DbService } from './lib/db/index.ts';
 import { RpcLayer } from './Rpc.ts';

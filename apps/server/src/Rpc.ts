@@ -1,6 +1,6 @@
 import { AppRpcs } from '@repo/contracts/AppRpcs';
 import { Layer } from 'effect';
-import { RpcServer } from 'effect/unstable/rpc';
+import { RpcServer } from 'effect/rpc';
 
 import { TodoHandlersLayer } from './modules/Todo/Handlers.ts';
 import { TodoRepository } from './modules/Todo/TodoRepository.ts';

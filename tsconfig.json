@@ -26,5 +26,6 @@
         "diagnostics": false
       }
     ]
-  }
+  },
+  "exclude": ["node_modules", "repos"]
 }

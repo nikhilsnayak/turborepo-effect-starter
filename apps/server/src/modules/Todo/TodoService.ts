@@ -1,7 +1,7 @@
 import { Todo, type TodoId, TodoNotFound } from '@repo/contracts/modules/Todo';
 import { Context, Effect, flow, Layer, Option, Schema } from 'effect';
 
-import { mapDatabaseFailure } from '@/lib/db';
+import { dieOnDatabaseFailure } from '@/lib/db';
 
 import { TodoRepository } from './TodoRepository.ts';
 
@@ -13,39 +13,33 @@ export class TodoService extends Context.Service<TodoService>()('@repo/server/To
     const todoRepository = yield* TodoRepository;
 
     const list = todoRepository.findAll.pipe(
-      mapDatabaseFailure('TodoService.list'),
       Effect.flatMap(decodeTodos),
+      dieOnDatabaseFailure('TodoService.list'),
       Effect.withSpan('TodoService.list'),
     );
 
     const create = Effect.fn('TodoService.create')(function* (title: string) {
-      const created = yield* todoRepository
-        .create(title)
-        .pipe(mapDatabaseFailure('TodoService.create'));
+      const created = yield* todoRepository.create(title);
       if (Option.isNone(created)) {
         return yield* Effect.die(new Error('TodoRepository.create returned no row.'));
       }
       return yield* decodeTodo(created.value);
-    });
+    }, dieOnDatabaseFailure('TodoService.create'));
 
     const toggle = Effect.fn('TodoService.toggle')(function* (todoId: TodoId) {
-      const updated = yield* todoRepository
-        .toggle(todoId)
-        .pipe(mapDatabaseFailure('TodoService.toggle'));
+      const updated = yield* todoRepository.toggle(todoId);
       if (Option.isNone(updated)) {
         return yield* new TodoNotFound({ todoId });
       }
       return yield* decodeTodo(updated.value);
-    });
+    }, dieOnDatabaseFailure('TodoService.toggle'));
 
     const remove = Effect.fn('TodoService.remove')(function* (todoId: TodoId) {
-      const deleted = yield* todoRepository
-        .remove(todoId)
-        .pipe(mapDatabaseFailure('TodoService.remove'));
+      const deleted = yield* todoRepository.remove(todoId);
       if (!deleted) {
         return yield* new TodoNotFound({ todoId });
       }
-    });
+    }, dieOnDatabaseFailure('TodoService.remove'));
 
     return { list, create, toggle, remove };
   }),

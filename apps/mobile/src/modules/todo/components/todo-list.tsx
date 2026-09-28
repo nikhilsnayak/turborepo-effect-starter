@@ -1,6 +1,6 @@
 import { useAtomValue } from '@effect/atom-react';
 import { todosAtom } from '@repo/client-runtime/modules/Todo';
-import { AsyncResult } from 'effect/unstable/reactivity';
+import { AsyncResult } from 'effect/reactivity';
 import { FlatList, StyleSheet, Text } from 'react-native';
 
 import { TodoItem } from './todo-item';

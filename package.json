@@ -21,28 +21,28 @@
     "prepare": "effect-tsgo patch --oxlint"
   },
   "dependencies": {
-    "@effect/tsgo": "0.45.0",
+    "@effect/tsgo": "0.46.1",
     "@types/bun": "catalog:",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "oxfmt": "^0.68.0",
-    "oxlint": "1.82.0",
-    "oxlint-tsgolint": "^7.0.2001",
-    "turbo": "^2.10.13",
+    "oxfmt": "^0.71.0",
+    "oxlint": "1.85.0",
+    "oxlint-tsgolint": "^7.0.2003",
+    "turbo": "^2.11.5",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "packageManager": "bun@1.4.2",
   "catalog": {
-    "@effect/atom-react": "4.0.0-rc.115",
-    "@effect/vitest": "4.0.0-rc.115",
+    "@effect/atom-react": "4.0.0-rc.118",
+    "@effect/vitest": "4.0.0-rc.118",
     "@types/bun": "^1.4.2",
-    "@types/react": "^19.3.0",
+    "@types/react": "19.2.4",
     "@types/react-dom": "^19.3.0",
-    "effect": "4.0.0-rc.115",
-    "lucide-react": "^1.46.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "effect": "4.0.0-rc.118",
+    "lucide-react": "^1.48.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "typescript": "~6.0.3",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.2"
   }
 }
