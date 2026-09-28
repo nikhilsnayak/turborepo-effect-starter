@@ -27,5 +27,5 @@
       }
     ]
   },
-  "exclude": ["node_modules", "repos"]
+  "exclude": ["node_modules", "vendor"]
 }

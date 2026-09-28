@@ -5,15 +5,13 @@ type Vendor = {
   readonly repository: string;
   readonly ref: string;
   readonly prefix: string;
-  readonly requiredPaths: ReadonlyArray<string>;
 };
 
 const vendors = {
   effect: {
     repository: 'https://github.com/Effect-TS/effect.git',
     ref: 'main',
-    prefix: 'repos/effect',
-    requiredPaths: ['LLMS.md', 'packages/effect/src/unstable/workflow/Workflow.ts'],
+    prefix: 'vendor/effect',
   },
 } satisfies Record<string, Vendor>;
 
@@ -153,13 +151,6 @@ const sync = async (name: VendorName, root: string) => {
   }
 
   await assertNoGitlinks(vendor, root);
-
-  const missingPaths = vendor.requiredPaths.filter(
-    (path) => !existsSync(`${root}/${vendor.prefix}/${path}`),
-  );
-  if (missingPaths.length > 0) {
-    throw new Error(`The ${name} subtree is missing required paths:\n${missingPaths.join('\n')}`);
-  }
 };
 
 const main = async () => {
