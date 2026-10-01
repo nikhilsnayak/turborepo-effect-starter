@@ -4,9 +4,13 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
+  "imports": {
+    "#internal/*": "./src/*"
+  },
   "exports": {
     "./AppRpcClient": "./src/AppRpcClient.ts",
     "./Config": "./src/Config.ts",
+    "./Failure": "./src/Failure.ts",
     "./modules/Todo": "./src/modules/Todo/Atoms.ts"
   },
   "scripts": {

@@ -16,9 +16,15 @@ describe('messageForTodoActionCause', () => {
   });
 
   it('uses action-specific copy for opaque server failures', () => {
-    const message = messageForTodoActionCause('delete', Cause.fail(new InternalServerError({})));
+    const errorId = '0199a4f8-2d7b-7000-8000-000000000001';
+    const message = messageForTodoActionCause(
+      'delete',
+      Cause.fail(new InternalServerError({ errorId })),
+    );
 
-    expect(message).toBe("Couldn't delete the todo. Check your connection and try again.");
+    expect(message).toBe(
+      "Couldn't delete the todo. Check your connection and try again. Reference " + `${errorId}.`,
+    );
   });
 
   it('uses action-specific copy for defects without exposing details', () => {

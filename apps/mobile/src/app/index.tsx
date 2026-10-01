@@ -2,8 +2,8 @@ import { Stack } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { TodoForm } from '@/modules/todo/components/todo-form';
-import { TodoList } from '@/modules/todo/components/todo-list';
+import { TodoForm } from '#modules/todo/components/todo-form.tsx';
+import { TodoList } from '#modules/todo/components/todo-list.tsx';
 
 export default function Index() {
   return (

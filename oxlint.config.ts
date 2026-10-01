@@ -3,6 +3,7 @@ import { defineConfig } from 'oxlint';
 
 export default defineConfig({
   extends: [recommended],
+  jsPlugins: ['./tooling/oxlint/repo-plugin.js'],
   ignorePatterns: ['**/routeTree.gen.ts', 'vendor/**', '**/node_modules/**', '**/dist/**'],
   plugins: [
     'eslint',
@@ -19,6 +20,11 @@ export default defineConfig({
   ],
   categories: {
     correctness: 'error',
+  },
+  rules: {
+    curly: 'error',
+    'effecttsgo/unstable-api-usage': 'off',
+    'repo/no-inline-yield': 'error',
   },
   options: {
     typeAware: true,

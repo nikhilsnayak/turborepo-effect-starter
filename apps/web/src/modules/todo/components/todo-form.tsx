@@ -15,12 +15,16 @@ export function TodoForm() {
 
   const addTodo = () => {
     const trimmed = title.trim();
-    if (trimmed.length === 0) return;
+    if (trimmed.length === 0) {
+      return;
+    }
 
     setTitle('');
     startTransition(async () => {
       const exit = await createTodo({ payload: { title: trimmed } });
-      if (Exit.isFailure(exit)) toast.error(messageForTodoActionCause('create', exit.cause));
+      if (Exit.isFailure(exit)) {
+        toast.error(messageForTodoActionCause('create', exit.cause));
+      }
     });
   };
 

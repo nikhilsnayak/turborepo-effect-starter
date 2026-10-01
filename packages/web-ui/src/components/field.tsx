@@ -1,9 +1,10 @@
-/* oxlint-disable jsx-a11y/prefer-tag-over-role -- This primitive groups controls without imposing fieldset semantics. */
-import { Label } from '@repo/web-ui/components/label';
-import { Separator } from '@repo/web-ui/components/separator';
-import { cn } from '@repo/web-ui/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useMemo } from 'react';
+
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- This primitive groups controls without imposing fieldset semantics. */
+import { Label } from '#components/label';
+import { Separator } from '#components/separator';
+import { cn } from '#lib/utils';
 
 function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (

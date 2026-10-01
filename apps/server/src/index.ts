@@ -1,12 +1,13 @@
+import 'effect/schema/SchemaJITCompiler/enable';
 import { networkInterfaces } from 'node:os';
 
-import { BunHttpServer, BunRuntime } from '@effect/platform-bun';
+import { BunCrypto, BunHttpServer, BunRuntime } from '@effect/platform-bun';
 import { Config, Console, Effect, Layer } from 'effect';
 import { HttpRouter, HttpServer, HttpServerResponse } from 'effect/http';
 import { RpcSerialization, RpcServer } from 'effect/rpc';
 
-import { DbService } from './lib/db/index.ts';
-import { RpcLayer } from './Rpc.ts';
+import { PostgresDbLayer } from '#db';
+import { RpcLayer } from '#internal/Rpc.ts';
 
 const HealthRoute = HttpRouter.add('GET', '/health', HttpServerResponse.text('OK'));
 
@@ -24,7 +25,9 @@ const CorsLayer = Layer.unwrap(
 const ListenBanner = Layer.effectDiscard(
   Effect.gen(function* () {
     const { address } = yield* HttpServer.HttpServer;
-    if (address._tag === 'UnixPathAddress') return;
+    if (address._tag === 'UnixPathAddress') {
+      return;
+    }
     const lines = [`  ➜  Local:    http://localhost:${address.port}/`];
     for (const iface of Object.values(networkInterfaces()).flat()) {
       if (iface?.family === 'IPv4' && !iface.internal) {
@@ -36,7 +39,8 @@ const ListenBanner = Layer.effectDiscard(
 );
 
 const AppLayer = Layer.mergeAll(RpcLayer, HealthRoute, CorsLayer).pipe(
-  Layer.provide(DbService.layer),
+  Layer.provide(PostgresDbLayer),
+  Layer.provide(BunCrypto.layer),
   Layer.provide(RpcServer.layerProtocolHttp({ path: '/rpc' })),
   Layer.provide(RpcSerialization.layerNdjson),
 );

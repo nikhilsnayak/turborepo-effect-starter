@@ -1,3 +1,4 @@
+import 'effect/schema/SchemaJITCompiler/enable';
 import '@repo/web-ui/globals.css';
 import { RegistryProvider } from '@effect/atom-react';
 import { serverUrlAtom } from '@repo/client-runtime/Config';

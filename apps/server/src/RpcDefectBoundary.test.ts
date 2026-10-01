@@ -1,3 +1,4 @@
+import { BunCrypto } from '@effect/platform-bun';
 import { assert, it } from '@effect/vitest';
 import { RpcDefectBoundary as RpcDefectBoundaryService } from '@repo/contracts/AppRpcs';
 import { InternalServerError } from '@repo/contracts/InternalServerError';
@@ -8,6 +9,8 @@ import { Rpc, RpcGroup, RpcSerialization, RpcServer } from 'effect/rpc';
 import { RequestId } from 'effect/rpc/RpcMessage';
 
 import { RpcDefectBoundaryLayer } from './RpcDefectBoundary.ts';
+
+const BoundaryLayer = RpcDefectBoundaryLayer.pipe(Layer.provide(BunCrypto.layer));
 
 const listRpc = TodoRpcs.requests.get('Todo.List')!;
 
@@ -41,7 +44,7 @@ it.effect('returns a public error and logs the original defect cause', () =>
       );
     }).pipe(
       Effect.scoped,
-      Effect.provide(Layer.merge(RpcDefectBoundaryLayer, Logger.layer([logger]))),
+      Effect.provide(Layer.merge(BoundaryLayer, Logger.layer([logger]))),
       Effect.exit,
     );
 
@@ -50,6 +53,8 @@ it.effect('returns a public error and logs the original defect cause', () =>
     assert(Option.isSome(error));
     if (Option.isSome(error) && Schema.is(InternalServerError)(error.value)) {
       assert.strictEqual(error.value._tag, 'InternalServerError');
+      assert.match(error.value.errorId, /^[0-9a-f-]{36}$/i);
+      assert.strictEqual(logs[1]?.annotations['errorId'], error.value.errorId);
     } else {
       assert.fail('Expected InternalServerError.');
     }
@@ -73,7 +78,7 @@ it.effect('exposes the middleware error for an RPC without a declared error', ()
     );
     const layer = RpcServer.layer(TestRpcs).pipe(
       Layer.provide(TestRpcs.toLayer({ 'Test.Defect': () => Effect.die(defect) })),
-      Layer.provide(RpcDefectBoundaryLayer),
+      Layer.provide(BoundaryLayer),
       Layer.provide(RpcServer.layerProtocolHttp({ path: '/rpc' })),
       Layer.provide(RpcSerialization.layerNdjson),
       Layer.provide(Logger.layer([])),
@@ -108,7 +113,7 @@ it.effect('preserves an expected RPC error', () =>
           'Test.Expected': () => Effect.fail(new TodoNotFound({ todoId })),
         }),
       ),
-      Layer.provide(RpcDefectBoundaryLayer),
+      Layer.provide(BoundaryLayer),
       Layer.provide(RpcServer.layerProtocolHttp({ path: '/rpc' })),
       Layer.provide(RpcSerialization.layerNdjson),
       Layer.provide(Logger.layer([])),

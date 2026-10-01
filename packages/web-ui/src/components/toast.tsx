@@ -1,7 +1,8 @@
 import { Toast } from '@base-ui/react/toast';
-import { Button } from '@repo/web-ui/components/button';
-import { cn } from '@repo/web-ui/lib/utils';
 import { CircleAlert, CircleCheck, X } from 'lucide-react';
+
+import { Button } from '#components/button';
+import { cn } from '#lib/utils';
 
 const manager = Toast.createToastManager();
 

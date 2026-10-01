@@ -1,11 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  resolve: {
-    tsconfigPaths: true,
-  },
   test: {
     isolate: false,
     dir: 'src',
+    globalSetup: ['./src/lib/db/PgliteDb.setup.ts'],
   },
 });

@@ -2,7 +2,7 @@ import { TodoId } from '@repo/contracts/modules/Todo';
 import { DateTime } from 'effect';
 import { AsyncResult, Atom } from 'effect/reactivity';
 
-import { AppRpcClient } from '../../AppRpcClient.ts';
+import { AppRpcClient } from '#internal/AppRpcClient.ts';
 
 const OPTIMISTIC_ID_PREFIX = 'optimistic:';
 

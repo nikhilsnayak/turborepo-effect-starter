@@ -24,10 +24,7 @@
     "noImplicitOverride": true,
 
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "noUnusedParameters": true
   },
   "include": ["src"]
 }

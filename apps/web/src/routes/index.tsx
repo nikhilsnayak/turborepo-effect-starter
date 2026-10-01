@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { TodoForm } from '@/modules/todo/components/todo-form';
-import { TodoList } from '@/modules/todo/components/todo-list';
+import { TodoForm } from '#modules/todo/components/todo-form.tsx';
+import { TodoList } from '#modules/todo/components/todo-list.tsx';
 
 export const Route = createFileRoute('/')({
   component: IndexPage,

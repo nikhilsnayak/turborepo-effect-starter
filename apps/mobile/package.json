@@ -2,7 +2,10 @@
   "name": "mobile",
   "version": "1.0.0",
   "private": true,
-  "main": "expo-router/entry",
+  "main": "index.ts",
+  "imports": {
+    "#modules/*": "./src/modules/*"
+  },
   "scripts": {
     "dev": "expo start",
     "android": "expo start --android",
@@ -16,10 +19,10 @@
     "@repo/contracts": "workspace:*",
     "@types/react": "catalog:",
     "effect": "catalog:",
-    "expo": "~57.0.25",
-    "expo-constants": "~57.0.19",
+    "expo": "~57.0.26",
+    "expo-constants": "~57.0.20",
     "expo-linking": "~57.0.11",
-    "expo-router": "~57.0.23",
+    "expo-router": "~57.0.24",
     "expo-splash-screen": "~57.0.9",
     "react": "catalog:",
     "react-native": "0.86.3",

@@ -1,73 +1,43 @@
 import { assert, describe, it } from '@effect/vitest';
 import { TodoId } from '@repo/contracts/modules/Todo';
-import { Cause, Effect, Exit, Layer } from 'effect';
+import { Effect, Layer } from 'effect';
 
-import { TodoRepository } from './TodoRepository.ts';
+import { PgliteDbLayer } from '../../lib/db/PgliteDb.ts';
 import { TodoService } from './TodoService.ts';
 
-const todoId = TodoId.make('todo-1');
-const todo = {
-  id: todoId,
-  title: 'Study the service boundary',
-  completed: false,
-  createdAt: '2026-08-20T00:00:00.000Z',
-  updatedAt: '2026-08-20T00:00:00.000Z',
-};
-
-const withRepository = (repository: Layer.Layer<TodoRepository>) =>
-  Effect.provide(TodoService.layer.pipe(Layer.provide(repository)));
+const layer = TodoService.layer.pipe(Layer.provideMerge(PgliteDbLayer));
 
 describe('TodoService', () => {
-  it.effect('returns a decoded repository projection', () =>
+  it.effect('creates, lists, toggles, and removes todos through Drizzle', () =>
     Effect.gen(function* () {
       const service = yield* TodoService;
-      assert.deepStrictEqual(yield* service.list, [todo]);
-    }).pipe(withRepository(TodoRepository.layerTest({ findAll: Effect.succeed([todo]) }))),
+      const created = yield* service.create('Use PGlite in service tests');
+      assert.strictEqual(created.title, 'Use PGlite in service tests');
+      assert.isFalse(created.completed);
+
+      const listed = yield* service.list;
+      assert.deepStrictEqual(listed, [created]);
+
+      const toggled = yield* service.toggle(created.id);
+      assert.isTrue(toggled.completed);
+      const listedAfterToggle = yield* service.list;
+      assert.deepStrictEqual(listedAfterToggle, [toggled]);
+
+      yield* service.remove(created.id);
+      const listedAfterRemoval = yield* service.list;
+      assert.deepStrictEqual(listedAfterRemoval, []);
+    }).pipe(Effect.provide(layer)),
   );
 
-  it.effect('treats an invalid repository projection as a defect', () =>
+  it.effect('fails with TodoNotFound when toggling or removing a missing todo', () =>
     Effect.gen(function* () {
       const service = yield* TodoService;
-      const exit = yield* Effect.exit(service.list);
-      assert(Exit.isFailure(exit));
-      assert(Cause.hasDies(exit.cause));
-    }).pipe(
-      withRepository(
-        TodoRepository.layerTest({
-          findAll: Effect.succeed([{ ...todo, completed: 'not-a-boolean' } as never]),
-        }),
-      ),
-    ),
-  );
+      const todoId = TodoId.make('missing-todo');
+      const toggleError = yield* service.toggle(todoId).pipe(Effect.flip);
+      const removeError = yield* service.remove(todoId).pipe(Effect.flip);
 
-  it.effect('treats create returning no row as a repository invariant defect', () =>
-    Effect.gen(function* () {
-      const service = yield* TodoService;
-      const exit = yield* Effect.exit(service.create('A todo'));
-      assert(Exit.isFailure(exit));
-      assert(Cause.hasDies(exit.cause));
-    }).pipe(withRepository(TodoRepository.layerTest({ create: () => Effect.succeedNone }))),
-  );
-
-  it.effect('fails with TodoNotFound when toggling a missing todo', () =>
-    Effect.gen(function* () {
-      const service = yield* TodoService;
-      const error = yield* service.toggle(todoId).pipe(Effect.flip);
-      assert.strictEqual(error._tag, 'TodoNotFound');
-      if (error._tag === 'TodoNotFound') {
-        assert.strictEqual(error.todoId, todoId);
-      }
-    }).pipe(withRepository(TodoRepository.layerTest({ toggle: () => Effect.succeedNone }))),
-  );
-
-  it.effect('fails with TodoNotFound when deleting a missing todo', () =>
-    Effect.gen(function* () {
-      const service = yield* TodoService;
-      const error = yield* service.remove(todoId).pipe(Effect.flip);
-      assert.strictEqual(error._tag, 'TodoNotFound');
-      if (error._tag === 'TodoNotFound') {
-        assert.strictEqual(error.todoId, todoId);
-      }
-    }).pipe(withRepository(TodoRepository.layerTest({ remove: () => Effect.succeed(false) }))),
+      assert.strictEqual(toggleError._tag, 'TodoNotFound');
+      assert.strictEqual(removeError._tag, 'TodoNotFound');
+    }).pipe(Effect.provide(layer)),
   );
 });

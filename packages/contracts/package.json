@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
+  "imports": {
+    "#internal/*": "./src/*",
+    "#modules/*": "./src/modules/*"
+  },
   "exports": {
     "./AppRpcs": "./src/AppRpcs.ts",
     "./InternalServerError": "./src/InternalServerError.ts",

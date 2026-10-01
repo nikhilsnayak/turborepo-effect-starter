@@ -8,10 +8,7 @@
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": true,
-    "paths": {
-      "@repo/web-ui/*": ["./src/*"]
-    }
+    "noEmit": true
   },
   "include": ["."],
   "exclude": ["node_modules", "dist"]

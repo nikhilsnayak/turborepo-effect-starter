@@ -12,7 +12,9 @@ export function TodoForm() {
 
   const addTodo = () => {
     const trimmed = title.trim();
-    if (trimmed.length === 0) return;
+    if (trimmed.length === 0) {
+      return;
+    }
 
     setTitle('');
     startTransition(async () => {

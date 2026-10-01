@@ -1,7 +1,7 @@
 import { RpcMiddleware } from 'effect/rpc';
 
-import { InternalServerError } from './InternalServerError.ts';
-import { TodoRpcs } from './modules/Todo/Rpcs.ts';
+import { InternalServerError } from '#internal/InternalServerError.ts';
+import { TodoRpcs } from '#modules/Todo/Rpcs.ts';
 
 export class RpcDefectBoundary extends RpcMiddleware.Service<RpcDefectBoundary>()(
   '@repo/contracts/RpcDefectBoundary',

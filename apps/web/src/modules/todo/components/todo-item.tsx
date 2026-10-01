@@ -21,14 +21,18 @@ export function TodoItem({ todo }: { readonly todo: Todo }) {
   const onToggle = () => {
     startTransition(async () => {
       const exit = await toggleTodo({ payload: { todoId: todo.id } });
-      if (Exit.isFailure(exit)) toast.error(messageForTodoActionCause('toggle', exit.cause));
+      if (Exit.isFailure(exit)) {
+        toast.error(messageForTodoActionCause('toggle', exit.cause));
+      }
     });
   };
 
   const onDelete = () => {
     startTransition(async () => {
       const exit = await deleteTodo({ payload: { todoId: todo.id } });
-      if (Exit.isFailure(exit)) toast.error(messageForTodoActionCause('delete', exit.cause));
+      if (Exit.isFailure(exit)) {
+        toast.error(messageForTodoActionCause('delete', exit.cause));
+      }
     });
   };
 

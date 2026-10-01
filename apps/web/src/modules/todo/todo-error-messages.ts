@@ -1,5 +1,5 @@
-import { TodoNotFound } from '@repo/contracts/modules/Todo';
-import { Cause, Option, Schema } from 'effect';
+import { failureMessage } from '@repo/client-runtime/Failure';
+import { Cause } from 'effect';
 
 type TodoAction = 'create' | 'toggle' | 'delete';
 
@@ -9,16 +9,12 @@ const actionFailureMessages = {
   delete: "Couldn't delete the todo. Check your connection and try again.",
 } satisfies Record<TodoAction, string>;
 
-const isTodoNotFound = Schema.is(TodoNotFound);
-
 export const messageForTodoActionCause = (
   action: TodoAction,
   cause: Cause.Cause<unknown>,
 ): string =>
-  Option.match(Cause.findErrorOption(cause), {
-    onNone: () => actionFailureMessages[action],
-    onSome: (error) =>
-      isTodoNotFound(error)
-        ? 'That todo no longer exists — your list may be out of date.'
-        : actionFailureMessages[action],
-  });
+  failureMessage(
+    cause,
+    { TodoNotFound: 'That todo no longer exists — your list may be out of date.' },
+    actionFailureMessages[action],
+  );
