@@ -19,9 +19,9 @@
     "test:watch": "bun --bun vitest --watch"
   },
   "dependencies": {
-    "@effect/platform-bun": "4.0.0",
-    "@effect/sql-pg": "4.0.0",
-    "@effect/sql-pglite": "4.0.0",
+    "@effect/platform-bun": "4.0.1",
+    "@effect/sql-pg": "4.0.1",
+    "@effect/sql-pglite": "4.0.1",
     "@effect/vitest": "catalog:",
     "@electric-sql/pglite": "^0.5.8",
     "@repo/contracts": "workspace:*",
