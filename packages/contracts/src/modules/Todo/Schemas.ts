@@ -24,6 +24,9 @@ export const TodoMutationInput = Schema.Struct({
 });
 export type TodoMutationInput = typeof TodoMutationInput.Type;
 
-export class TodoNotFound extends Schema.TaggedError<TodoNotFound>()('TodoNotFound', {
+export class TodoNotFound extends Schema.TaggedError<
+  TodoNotFound,
+  { readonly brand: unique symbol }
+>()('TodoNotFound', {
   todoId: TodoId,
 }) {}

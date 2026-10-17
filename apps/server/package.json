@@ -19,11 +19,11 @@
     "test:watch": "bun --bun vitest --watch"
   },
   "dependencies": {
-    "@effect/platform-bun": "4.0.1",
-    "@effect/sql-pg": "4.0.1",
-    "@effect/sql-pglite": "4.0.1",
+    "@effect/platform-bun": "4.0.5",
+    "@effect/sql-pg": "4.0.5",
+    "@effect/sql-pglite": "4.0.5",
     "@effect/vitest": "catalog:",
-    "@electric-sql/pglite": "^0.5.8",
+    "@electric-sql/pglite": "^0.5.10",
     "@repo/contracts": "workspace:*",
     "@types/bun": "catalog:",
     "drizzle-kit": "1.0.0-rc.5-5935859",

@@ -21,29 +21,29 @@
     "prepare": "effect-tsgo patch --oxlint"
   },
   "dependencies": {
-    "@effect/tsgo": "0.50.0",
+    "@effect/tsgo": "0.53.3",
     "@types/bun": "catalog:",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "oxfmt": "^0.72.0",
-    "oxlint": "1.87.0",
-    "oxlint-tsgolint": "^7.0.2003",
-    "turbo": "^2.11.7",
+    "oxfmt": "^0.73.0",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "^7.0.2004",
+    "turbo": "^2.11.9",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "packageManager": "bun@1.4.2",
   "catalog": {
-    "@effect/atom-react": "4.0.1",
-    "@effect/vitest": "4.0.1",
-    "@types/bun": "^1.4.2",
+    "@effect/atom-react": "4.0.5",
+    "@effect/vitest": "4.0.5",
+    "@types/bun": "^1.4.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "^19.3.0",
-    "effect": "4.0.1",
-    "lucide-react": "^1.52.0",
+    "effect": "4.0.5",
+    "lucide-react": "^1.59.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "typescript": "~6.0.3",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
   },
   "patchedDependencies": {
     "drizzle-orm@1.0.0-rc.5-5935859": "patches/drizzle-orm@1.0.0-rc.5-5935859.patch"
