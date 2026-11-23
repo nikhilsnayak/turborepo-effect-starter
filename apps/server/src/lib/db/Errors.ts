@@ -1,5 +1,5 @@
 import { EffectDrizzleQueryError } from 'drizzle-orm/effect-core';
-import { Effect, Metric, Schema } from 'effect';
+import { Cause, Effect, Metric, Schema } from 'effect';
 import { SqlError } from 'effect/sql';
 
 type DatabaseFailure = EffectDrizzleQueryError | SqlError.SqlError;
@@ -21,7 +21,8 @@ export const dieOnDatabaseFailure = (operation: string) =>
         isDatabaseFailure,
         (error) => {
           const cause = SqlError.isSqlError(error) ? error : error.cause;
-          const reason = SqlError.isSqlError(cause) ? cause.reason._tag : error._tag;
+          const failure = Cause.isCause(cause) ? Cause.squash(cause) : cause;
+          const reason = SqlError.isSqlError(failure) ? failure.reason._tag : error._tag;
           return Metric.update(databaseFailures.pipe(Metric.withAttributes({ operation })), 1).pipe(
             Effect.andThen(Effect.die(new Error(`Database failure in ${operation}: ${reason}.`))),
           );

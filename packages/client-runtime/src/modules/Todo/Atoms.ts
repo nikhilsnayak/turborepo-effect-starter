@@ -29,7 +29,7 @@ export const createTodoAtom = todosAtom.pipe(
   Atom.optimisticFn({
     fn: AppRpcClient.mutation('Todo.Create'),
     reducer: (current, update) => {
-      const now = DateTime.formatIso(DateTime.nowUnsafe());
+      const now = DateTime.nowUnsafe();
       return AsyncResult.map(current, (todos) => [
         {
           id: optimisticId(),

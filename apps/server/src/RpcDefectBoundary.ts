@@ -1,6 +1,7 @@
 import { RpcDefectBoundary as RpcDefectBoundaryService } from '@repo/contracts/AppRpcs';
 import { InternalServerError } from '@repo/contracts/InternalServerError';
-import { Cause, Crypto, Effect, Layer, Metric } from 'effect';
+import { Cause, Effect, Layer, Metric } from 'effect';
+import { SecureRandom } from 'effect/crypto';
 
 const rpcDefects = Metric.counter('app_rpc_defects_total', {
   description: 'Unexpected RPC handler defects.',
@@ -10,12 +11,12 @@ const rpcDefects = Metric.counter('app_rpc_defects_total', {
 export const RpcDefectBoundaryLayer = Layer.effect(
   RpcDefectBoundaryService,
   Effect.gen(function* () {
-    const crypto = yield* Crypto.Crypto;
+    const random = yield* SecureRandom.SecureRandom;
     return RpcDefectBoundaryService.of((effect, { requestId, rpc }) =>
       effect.pipe(
         Effect.catchCauseIf(Cause.hasDies, (cause) =>
           Effect.gen(function* () {
-            const errorId = yield* crypto.randomUUIDv7().pipe(Effect.orDie);
+            const errorId = yield* random.uuidV7();
             yield* Metric.update(rpcDefects.pipe(Metric.withAttributes({ rpc: rpc._tag })), 1);
             yield* Effect.logError('Unhandled RPC defect.', cause).pipe(
               Effect.annotateLogs({ errorId }),

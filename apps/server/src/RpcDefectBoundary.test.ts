@@ -37,6 +37,7 @@ it.effect('returns a public error and logs the original defect cause', () =>
         {
           client: new Rpc.ServerClient(1),
           requestId: RequestId('request-1'),
+          remoteParentSpan: undefined,
           rpc: listRpc,
           payload: undefined,
           headers: Headers.empty,

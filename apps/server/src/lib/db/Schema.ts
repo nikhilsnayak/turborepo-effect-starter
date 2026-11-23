@@ -1,14 +1,28 @@
 import { TodoId } from '@repo/contracts/modules/Todo';
-import { boolean, snakeCase, text, timestamp } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { boolean, customType, snakeCase, text } from 'drizzle-orm/pg-core';
+import { DateTime } from 'effect';
 
 const table = snakeCase.table;
 
-const createdAt = timestamp({ withTimezone: true, mode: 'string' }).notNull().defaultNow();
-const updatedAt = timestamp({ withTimezone: true, mode: 'string' })
-  .notNull()
-  .defaultNow()
-  // oxlint-disable-next-line effecttsgo/global-date -- Drizzle's synchronous update hook requires a native Date-compatible value.
-  .$onUpdate(() => new Date().toISOString());
+const dateTimeColumn = customType<{
+  data: DateTime.Utc;
+  driverData: string;
+  driverOutput: Date;
+  jsonData: string;
+}>({
+  dataType: () => 'timestamp with time zone',
+  toDriver: DateTime.formatIso,
+  fromDriver: DateTime.fromDateUnsafe,
+  fromJson: DateTime.makeUnsafe,
+  codec: 'timestamptz',
+});
+
+const createdAt = () =>
+  dateTimeColumn()
+    .notNull()
+    .default(sql`now()`);
+const updatedAt = () => createdAt().$onUpdate(DateTime.nowUnsafe);
 
 export const Todos = table('todos', {
   id: text()
@@ -17,6 +31,6 @@ export const Todos = table('todos', {
     .$defaultFn(() => TodoId.make(Bun.randomUUIDv7())),
   title: text().notNull(),
   completed: boolean().notNull().default(false),
-  createdAt,
-  updatedAt,
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
 });

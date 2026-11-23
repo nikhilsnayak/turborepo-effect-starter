@@ -40,27 +40,39 @@ const assertSanitizedDatabaseFailure = (
   assert.strictEqual(defect.message, `Database failure in TodoService.list: ${reason}.`);
   assert.deepStrictEqual(logs, []);
 
-  const publicAndLogged = JSON.stringify({ defect: defect.message, logs });
+  const publicAndLogged = JSON.stringify({ defect: Cause.pretty(exit.cause), logs });
   for (const sensitiveValue of sensitiveValues) {
     assert(!publicAndLogged.includes(sensitiveValue));
   }
 };
 
 describe('dieOnDatabaseFailure', () => {
-  it.effect('turns a Drizzle query failure into a sanitized defect', () =>
+  it.effect('preserves the SQL failure category inside a sanitized Drizzle defect', () =>
     Effect.gen(function* () {
+      const sqlError = new SqlError.SqlError({
+        reason: new SqlError.UnknownError({
+          cause: new Error('database hostname'),
+          message: 'private driver message',
+          operation: 'driver.query',
+        }),
+      });
       const failure = new EffectDrizzleQueryError({
         query: 'select * from todos where title = $1',
         params: ['private todo title'],
-        cause: new Error('database hostname'),
+        cause: Cause.fail(sqlError),
       });
       const { exit, logs } = yield* captureFailure(failure);
 
       assertSanitizedDatabaseFailure(
         exit,
         logs,
-        ['select * from todos', 'private todo title', 'database hostname'],
-        'EffectDrizzleQueryError',
+        [
+          'select * from todos',
+          'private todo title',
+          'database hostname',
+          'private driver message',
+        ],
+        'UnknownError',
       );
     }),
   );

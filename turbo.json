@@ -11,7 +11,12 @@
       "cache": false,
       "persistent": true
     },
-    "test": {},
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "test": {
+      "dependsOn": ["transit"]
+    },
     "test:watch": {
       "cache": false,
       "persistent": true
